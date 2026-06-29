@@ -1,4 +1,4 @@
-/* Thèmes Visuels */
+/* Définition de l'ensemble des Thèmes Graphiques */
 .theme-dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #6366f1; --success: #22c55e; --error: #ef4444; --kbd-bg: #334155; }
 .theme-light { --bg: #f0f2f5; --card: #ffffff; --text: #1e293b; --accent: #4f46e5; --success: #16a34a; --error: #dc2626; --kbd-bg: #e2e8f0; }
 .theme-atlantis { --bg: #0f2d37; --card: #164e63; --text: #e0f2fe; --accent: #38bdf8; --success: #22c55e; --error: #ef4444; --kbd-bg: #0e7490; }
@@ -20,10 +20,17 @@ header { text-align: center; margin: 10px 0; display: flex; flex-direction: colu
 #theme-toggle, #btn-fiche, #btn-boutique, #btn-stats, .toggle-btn { cursor: pointer; border: none; background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 50px; font-weight: bold; font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 .toggle-btn.active { background: #f59e0b; color: white; }
 
-/* Bloc Quêtes Quotidiennes */
-.daily-quests-box { background: var(--card); max-width: 440px; margin: 10px auto; padding: 12px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 5px solid #f59e0b; }
-.daily-quests-box h4 { margin: 0 0 8px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.quest-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+/* Calendrier d'assiduité (Contribution Heatmap Style) */
+.calendar-heatmap { display: flex; gap: 5px; justify-content: center; background: var(--card); padding: 12px; border-radius: 12px; margin: 10px 0; }
+.cal-day { width: 14px; height: 14px; border-radius: 3px; background: rgba(255,255,255,0.1); transition: 0.2s; position: relative; }
+.cal-day.day-lvl-0 { background: rgba(148, 163, 184, 0.15); }
+.cal-day.day-lvl-1 { background: #bbf7d0; }
+.cal-day.day-lvl-2 { background: #4ade80; }
+.cal-day.day-lvl-3 { background: #166534; }
+
+.daily-quests-box { background: var(--card); max-width: 440px; margin: 10px auto; padding: 12px; border-radius: 16px; border-left: 5px solid #f59e0b; }
+.daily-quests-box h4 { margin: 0 0 8px 0; font-size: 0.95rem; text-transform: uppercase; }
+.quest-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; }
 .quest-item.done { text-decoration: line-through; color: var(--success); font-weight: bold; }
 
 #timer-container { font-weight: bold; font-size: 1.1rem; color: #f43f5e; background: rgba(244,63,94,0.1); padding: 6px 20px; border-radius: 10px; margin-top: 5px; }
@@ -39,9 +46,8 @@ input { padding: 14px; border-radius: 12px; border: 2px solid var(--kbd-bg); wid
 .qcm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 .qcm-btn { background: var(--kbd-bg); color: var(--text); border: none; padding: 14px; font-size: 1.05rem; font-weight: bold; border-radius: 12px; cursor: pointer; }
 
-/* Grille du mini-jeu d'association */
 .association-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-.assoc-card { background: var(--kbd-bg); color: var(--text); border: 2px solid transparent; padding: 20px 10px; font-size: 1.3rem; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+.assoc-card { background: var(--kbd-bg); color: var(--text); border: 2px solid transparent; padding: 20px 10px; font-size: 1.3rem; font-weight: bold; border-radius: 12px; cursor: pointer; }
 .assoc-card.selected { border-color: var(--accent); background: rgba(99,102,241,0.2); }
 .assoc-card.hidden-pair { visibility: hidden; pointer-events: none; }
 
@@ -65,15 +71,27 @@ input { padding: 14px; border-radius: 12px; border: 2px solid var(--kbd-bg); wid
 .mnemonic-text { font-size: 0.95rem; color: #f59e0b; margin: 10px 0; font-weight: bold; background: rgba(245,158,11,0.1); padding: 8px; border-radius: 8px; }
 .hint-word { margin-top: 10px; font-style: italic; color: #94a3b8; font-size: 0.8rem; }
 
-/* Liste du Tableau des Records */
-.leaderboard-list { background: var(--bg); padding: 15px 15px 15px 35px; border-radius: 12px; margin: 10px 0; font-weight: bold; color: #f59e0b; }
-.leaderboard-list li { padding: 4px 0; color: var(--text); border-bottom: 1px dashed rgba(255,255,255,0.05); }
+/* Layout de la Boutique Évoluée */
+.shop-grid, .shop-grid-themes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; background: var(--bg); padding: 8px; border-radius: 12px; margin-top: 5px; }
+.shop-grid-themes { grid-template-columns: 1fr; }
+.shop-item-box { background: var(--kbd-bg); border-radius: 8px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 1.2rem; transition: 0.2s; position: relative; }
+.shop-item-box.owned { border: 2px solid var(--success); }
+.buy-item-btn, .theme-shop-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: var(--accent); color: white; text-align: left; display: flex; justify-content: space-between; margin: 2px 0; }
+.theme-shop-btn.owned { border: 2px solid var(--success); }
+.freeze-buy-container { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 10px; border-radius: 12px; font-size: 0.9rem; }
+.freeze-buy-container button { width: auto; padding: 8px 14px; margin: 0; }
+
+.backup-container { display: flex; gap: 8px; margin: 15px 0; }
+.backup-container button { flex: 1; padding: 10px; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+
+.leaderboard-list { background: var(--bg); padding: 10px 10px 10px 30px; border-radius: 12px; margin: 10px 0; font-weight: bold; color: #f59e0b; }
+.leaderboard-list li { padding: 4px 0; color: var(--text); border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 0.9rem; }
 
 .stats-content { padding: 5px; font-size: 1.05rem; line-height: 1.5; }
 .stats-content p { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--kbd-bg); padding: 6px 0; margin: 0; }
-.badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 440px; margin-top: 10px; max-height: 22vh; overflow-y: auto; padding: 5px; }
+.badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 440px; margin-top: 10px; max-height: 20vh; overflow-y: auto; padding: 5px; }
 .badge-item { background: var(--kbd-bg); padding: 10px; border-radius: 10px; font-size: 0.8rem; text-align: center; font-weight: bold; opacity: 0.25; transition: 0.3s; color: var(--text); }
-.badge-item.unlocked { opacity: 1; background: linear-gradient(135deg, #a855f7, var(--accent)); color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.2); }
+.badge-item.unlocked { opacity: 1; background: linear-gradient(135deg, #a855f7, var(--accent)); color: white; }
 
 .confetti-particle { position: fixed; width: 8px; height: 8px; z-index: 9999; top: -10px; border-radius: 50%; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(105vh) translateX(50px) rotate(360deg); } }
@@ -83,14 +101,6 @@ dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kbd-bg); padding-bottom: 10px; }
 #close-modal, #close-boutique, #close-stats { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text); }
 #fiche-content { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding-top: 15px; max-height: 45vh; overflow-y: auto; }
-.fiche-item { background: var(--bg); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; position: relative; }
+.fiche-item { background: var(--bg); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; }
 .dictio-audio-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; margin-top: 4px; display: inline-block; }
-
-.shop-section { margin-top: 15px; }
-.avatars-pool { display: flex; gap: 10px; font-size: 1.8rem; flex-wrap: wrap; background: var(--bg); padding: 10px; border-radius: 12px; }
-.avatar-item { opacity: 0.2; cursor: not-allowed; }
-.avatar-item.unlocked { opacity: 1; cursor: pointer; }
-.themes-pool { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
-.theme-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: var(--kbd-bg); color: var(--text); }
-.theme-btn.locked { opacity: 0.3; cursor: not-allowed; }
 .btn-prestige { background: linear-gradient(135deg, #fbbf24, #d97706); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; display: none; }
