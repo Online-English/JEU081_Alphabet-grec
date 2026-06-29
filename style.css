@@ -1,7 +1,7 @@
-/* Thèmes Visuels existants et nouveaux */
+/* Thèmes Visuels */
 .theme-dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #6366f1; --success: #22c55e; --error: #ef4444; --kbd-bg: #334155; }
 .theme-light { --bg: #f0f2f5; --card: #ffffff; --text: #1e293b; --accent: #4f46e5; --success: #16a34a; --error: #dc2626; --kbd-bg: #e2e8f0; }
-.theme-atlantis { --bg: #0f2d37; --card: #164e63; --text: #e0f2fe; --accent: #38bdf8; --success: #22c55e; --error: #ef4444; --kbd-bg: #0e7490; } /* Nouveau thème Niveau 4 */
+.theme-atlantis { --bg: #0f2d37; --card: #164e63; --text: #e0f2fe; --accent: #38bdf8; --success: #22c55e; --error: #ef4444; --kbd-bg: #0e7490; }
 .theme-cyberpunk { --bg: #0d0316; --card: #22063a; --text: #00ffcc; --accent: #ff007f; --success: #39ff14; --error: #ff3131; --kbd-bg: #3d0c66; }
 .theme-olympe { --bg: #fdfbf7; --card: #f4efe2; --text: #5c4d3c; --accent: #c5a059; --success: #2e7d32; --error: #c62828; --kbd-bg: #e0d7be; }
 .theme-sunset { --bg: #4c1d95; --card: #5b21b6; --text: #fef3c7; --accent: #f59e0b; --success: #34d399; --error: #fb7185; --kbd-bg: #6d28d9; }
@@ -20,10 +20,16 @@ header { text-align: center; margin: 10px 0; display: flex; flex-direction: colu
 #theme-toggle, #btn-fiche, #btn-boutique, #btn-stats, .toggle-btn { cursor: pointer; border: none; background: var(--card); color: var(--text); padding: 10px 12px; border-radius: 50px; font-weight: bold; font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 .toggle-btn.active { background: #f59e0b; color: white; }
 
-#timer-container { font-weight: bold; font-size: 1.2rem; color: #f43f5e; background: rgba(244,63,94,0.1); padding: 6px 20px; border-radius: 10px; margin-top: 5px; }
+/* Bloc Quêtes Quotidiennes */
+.daily-quests-box { background: var(--card); max-width: 440px; margin: 10px auto; padding: 12px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 5px solid #f59e0b; }
+.daily-quests-box h4 { margin: 0 0 8px 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.quest-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+.quest-item.done { text-decoration: line-through; color: var(--success); font-weight: bold; }
+
+#timer-container { font-weight: bold; font-size: 1.1rem; color: #f43f5e; background: rgba(244,63,94,0.1); padding: 6px 20px; border-radius: 10px; margin-top: 5px; }
 .timer-hidden { display: none !important; }
 
-#exercise-container { background: var(--card); padding: 25px 20px; border-radius: 24px; margin: 10px auto; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; }
+#exercise-container { background: var(--card); padding: 25px 20px; border-radius: 24px; margin: 10px auto; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; box-sizing: border-box; min-height: 250px; }
 .progress-container { width: 100%; max-width: 440px; height: 10px; background: var(--kbd-bg); border-radius: 10px; margin: 5px auto; overflow: hidden; }
 #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), #a855f7); transition: 0.3s ease; }
 
@@ -32,6 +38,12 @@ input { padding: 14px; border-radius: 12px; border: 2px solid var(--kbd-bg); wid
 
 .qcm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 .qcm-btn { background: var(--kbd-bg); color: var(--text); border: none; padding: 14px; font-size: 1.05rem; font-weight: bold; border-radius: 12px; cursor: pointer; }
+
+/* Grille du mini-jeu d'association */
+.association-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+.assoc-card { background: var(--kbd-bg); color: var(--text); border: 2px solid transparent; padding: 20px 10px; font-size: 1.3rem; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+.assoc-card.selected { border-color: var(--accent); background: rgba(99,102,241,0.2); }
+.assoc-card.hidden-pair { visibility: hidden; pointer-events: none; }
 
 .dashboard-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 440px; margin: 10px auto; }
 .dash-cell { padding: 6px 0; font-size: 0.8rem; font-weight: bold; border-radius: 6px; text-align: center; background: var(--kbd-bg); color: var(--text); opacity: 0.4; }
@@ -53,14 +65,16 @@ input { padding: 14px; border-radius: 12px; border: 2px solid var(--kbd-bg); wid
 .mnemonic-text { font-size: 0.95rem; color: #f59e0b; margin: 10px 0; font-weight: bold; background: rgba(245,158,11,0.1); padding: 8px; border-radius: 8px; }
 .hint-word { margin-top: 10px; font-style: italic; color: #94a3b8; font-size: 0.8rem; }
 
-/* Stats & Badges Grid Design */
+/* Liste du Tableau des Records */
+.leaderboard-list { background: var(--bg); padding: 15px 15px 15px 35px; border-radius: 12px; margin: 10px 0; font-weight: bold; color: #f59e0b; }
+.leaderboard-list li { padding: 4px 0; color: var(--text); border-bottom: 1px dashed rgba(255,255,255,0.05); }
+
 .stats-content { padding: 5px; font-size: 1.05rem; line-height: 1.5; }
 .stats-content p { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--kbd-bg); padding: 6px 0; margin: 0; }
-.badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 440px; margin-top: 10px; max-height: 30vh; overflow-y: auto; padding: 5px; }
+.badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 440px; margin-top: 10px; max-height: 22vh; overflow-y: auto; padding: 5px; }
 .badge-item { background: var(--kbd-bg); padding: 10px; border-radius: 10px; font-size: 0.8rem; text-align: center; font-weight: bold; opacity: 0.25; transition: 0.3s; color: var(--text); }
 .badge-item.unlocked { opacity: 1; background: linear-gradient(135deg, #a855f7, var(--accent)); color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.2); }
 
-/* Confettis */
 .confetti-particle { position: fixed; width: 8px; height: 8px; z-index: 9999; top: -10px; border-radius: 50%; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(105vh) translateX(50px) rotate(360deg); } }
 
@@ -68,8 +82,10 @@ dialog { border: none; border-radius: 20px; background: var(--card); color: var(
 dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--kbd-bg); padding-bottom: 10px; }
 #close-modal, #close-boutique, #close-stats { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text); }
-#fiche-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-top: 15px; max-height: 45vh; overflow-y: auto; }
-.fiche-item { background: var(--bg); padding: 8px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
+#fiche-content { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding-top: 15px; max-height: 45vh; overflow-y: auto; }
+.fiche-item { background: var(--bg); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; position: relative; }
+.dictio-audio-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; margin-top: 4px; display: inline-block; }
+
 .shop-section { margin-top: 15px; }
 .avatars-pool { display: flex; gap: 10px; font-size: 1.8rem; flex-wrap: wrap; background: var(--bg); padding: 10px; border-radius: 12px; }
 .avatar-item { opacity: 0.2; cursor: not-allowed; }
@@ -77,4 +93,4 @@ dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
 .themes-pool { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
 .theme-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: var(--kbd-bg); color: var(--text); }
 .theme-btn.locked { opacity: 0.3; cursor: not-allowed; }
-.btn-prestige { background: linear-gradient(135deg, #fbbf24, #d97706); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; display: none; box-shadow: 0 0 15px rgba(245,158,11,0.5); }
+.btn-prestige { background: linear-gradient(135deg, #fbbf24, #d97706); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; display: none; }

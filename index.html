@@ -12,7 +12,7 @@
         <button id="btn-boutique">🛍️ Boutique</button>
         <button id="btn-stats">📊 Stats & Badges</button>
         <button id="slow-toggle" class="toggle-btn">🐢 Audio</button>
-        <button id="btn-fiche">📚 Fiche</button>
+        <button id="btn-fiche">📚 Fiche & Dictio</button>
     </div>
     
     <header>
@@ -22,10 +22,16 @@
             <div class="combo-badge" id="combo-box">Combo <span id="combo-val">x1</span> 🔥</div>
         </div>
         <div id="stats">⚡ <span id="score">0</span> XP | Série : <span id="streak">0</span></div>
-        <div id="timer-container" class="timer-hidden">⏱️ Temps restant : <span id="timer-val">60</span>s</div>
+        <div id="timer-container" class="timer-hidden">⏱️ Temps : <span id="timer-val">60</span>s | Session : <span id="chrono-score-val">0</span> pts</div>
     </header>
 
     <main>
+        <!-- Section des Quêtes Quotidiennes -->
+        <div id="daily-quests-box" class="daily-quests-box">
+            <h4>🎯 Défis du Jour (+300 XP chacun)</h4>
+            <div id="quests-list"></div>
+        </div>
+
         <div class="progress-container"><div id="progress-bar"></div></div>
         
         <select id="exercise-select">
@@ -36,6 +42,7 @@
             <option value="oral">🗣️ Expression Orale (Micro)</option>
             <option value="chrono">⏱️ CONTRE-LA-MONTRE (QCM Rapide)</option>
             <option value="rattrapage">⚠️ SESSION RATTRAPAGE (XP x2)</option>
+            <option value="association">🧩 MINI-JEU D'ASSOCIATION</option>
         </select>
 
         <div id="exercise-container">
@@ -48,7 +55,7 @@
 
     <dialog id="modal-fiche">
         <div class="modal-header">
-            <h2>Alphabet & Combinaisons</h2>
+            <h2>Dictionnaire & Fiche 🔊</h2>
             <button id="close-modal">❌</button>
         </div>
         <div id="fiche-content"></div>
@@ -71,10 +78,14 @@
 
     <dialog id="modal-stats">
         <div class="modal-header">
-            <h2>Vos Performances & Badges</h2>
+            <h2>Performances & Records</h2>
             <button id="close-stats">❌</button>
         </div>
         <div id="stats-content" class="stats-content"></div>
+        
+        <h3>🏆 Top 5 Contre-la-montre</h3>
+        <ol id="leaderboard-list" class="leaderboard-list"></ol>
+
         <h3>Vos Trophées de Niveau</h3>
         <div id="badges-grid" class="badges-grid"></div>
     </dialog>
