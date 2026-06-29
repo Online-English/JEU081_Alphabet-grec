@@ -24,7 +24,7 @@ const alphabet = [
     { maj: "Ψ", min: "ψ", nom: "Psi", mot: "Ψωμί (Pain)", type: "lettre", mne: "Le trident magique de Poséidon : son 'Ps'." },
     { maj: "Ω", min: "ω", nom: "Omega", mot: "Ώρα (Heure)", type: "lettre", mne: "Le grand 'O' en forme de petites fesses." },
     
-    // Combinaisons (Niveau >= 2)
+    // Combinaisons
     { maj: "ΟΙ", min: "οι", nom: "I (oi)", mot: "Οικόγενεια (Famille)", type: "combo", mne: "L'union du O et du I se prononce 'I'." },
     { maj: "ΕΙ", min: "ει", nom: "I (ei)", mot: "Είμαι (Je suis)", type: "combo", mne: "L'union du E et du I se prononce 'I'." },
     { maj: "ΑΙ", min: "αι", nom: "È (αι)", mot: "Αίμα (Sang)", type: "combo", mne: "L'union du A et du I se prononce 'È'." },
@@ -32,21 +32,29 @@ const alphabet = [
     { maj: "ΝΤ", min: "ντ", nom: "D (nt)", mot: "Ντομάτα (Tomate)", type: "combo", mne: "En début de mot, NT se prononce 'D'." }
 ];
 
-const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "⚔️", "🛡️", "🏹", "✨", "🔥", "👑"];
-const prestigeAvatars = ["⚡", "🔱", "🏹", "🦉", "🛡️", "🌋", "🍷"];
-
-// Économie : Boutique d'objets cachés (5 Avatars & 5 Thèmes)
+// Catalogue des 20 Avatars de la boutique
 const shopAvatars = [
-    { emoji: "🧜‍♂️", cost: 600 }, { emoji: "👾", cost: 1000 }, { emoji: "🤖", cost: 1500 }, { emoji: "🦊", cost: 2000 }, { emoji: "🦄", cost: 3000 }
-];
-const shopThemes = [
-    { id: "theme-atlantis", name: "Profondeurs d'Atlantis 🌊", cost: 800 },
-    { id: "theme-cyberpunk", name: "Néo Athènes 🌌", cost: 1200 },
-    { id: "theme-sunset", name: "Coucher de Soleil Égée 🌅", cost: 1800 },
-    { id: "theme-forest", name: "Forêt des Dryades 🌳", cost: 2500 },
-    { id: "theme-royal", name: "Empire Byzantin 👑", cost: 3500 }
+    { emoji: "👶", cost: 0 }, { emoji: "🤓", cost: 100 }, { emoji: "🎓", cost: 200 }, { emoji: "🏛️", cost: 300 }, { emoji: "🏺", cost: 400 },
+    { emoji: "🦉", cost: 500 }, { emoji: "🦁", cost: 600 }, { emoji: "🦅", cost: 700 }, { emoji: "🐉", cost: 800 }, { emoji: "🌋", cost: 900 },
+    { emoji: "☀️", cost: 1000 }, { emoji: "🌟", cost: 1100 }, { emoji: "🔮", cost: 1200 }, { emoji: "⚔️", cost: 1300 }, { emoji: "🛡️", cost: 1400 },
+    { emoji: "🏹", cost: 1500 }, { emoji: "✨", cost: 1600 }, { emoji: "🔥", cost: 1800 }, { emoji: "👑", cost: 2000 }, { emoji: "🧜‍♂️", cost: 2500 }
 ];
 
+// Catalogue des 10 Thèmes de la boutique
+const shopThemes = [
+    { id: "theme-dark", name: "Sombre Abyssal 🌌", cost: 0 },
+    { id: "theme-light", name: "Clarté Épurée ☀️", cost: 0 },
+    { id: "theme-olympe", name: "Marbre de l'Olympe 🏛️", cost: 0 },
+    { id: "theme-atlantis", name: "Profondeurs d'Atlantis 🌊", cost: 400 },
+    { id: "theme-cyberpunk", name: "Néo Athènes 🌆", cost: 800 },
+    { id: "theme-sunset", name: "Coucher de Soleil Égée 🌅", cost: 1200 },
+    { id: "theme-forest", name: "Forêt des Dryades 🌳", cost: 1600 },
+    { id: "theme-royal", name: "Empire Byzantin 👑", cost: 2000 },
+    { id: "theme-neon", name: "Lumière Néon 🔋", cost: 2500 },
+    { id: "theme-sahara", name: "Sables du Sahara 🏜️", cost: 3000 }
+];
+
+const prestigeAvatars = ["⚡", "🔱", "🏹", "🦉", "🛡️", "🌋", "🍷"];
 const badgesList = [
     "🦉 Initié d'Athéna (Niv 1)", "📜 Scribe de l'Agora (Niv 2)", "🏺 Porteur de Jarre (Niv 3)", "🔱 Explorateur d'Atlantis (Niv 4)",
     "🛡️ Soldat de Sparte (Niv 5)", "🗣️ Orateur du Pnyx (Niv 6)", "🎭 Acteur de Dionysos (Niv 7)", "📐 Disciple de Thalès (Niv 8)",
@@ -55,14 +63,11 @@ const badgesList = [
     "🌋 Forgeron d'Héphaïstos (Niv 17)", "⚔️ Conquérant du Titan (Niv 18)", "🌟 Élu des Constellations (Niv 19)", "⚡ Divinité de l'Olympe (Niv 20)"
 ];
 
-const nativeThemes = [
-    { id: "theme-dark", name: "Sombre Abyssal" }, { id: "theme-light", name: "Clarté Épurée" }, { id: "theme-olympe", name: "Marbre de l'Olympe" }
-];
-
-// État initial global (Version V9 - Économie de Drachmes et Calendrier)
+// Hydratation de l'état v9 (Choix actif des thèmes et avatars libres)
 let state = JSON.parse(localStorage.getItem('greekMasterV9')) || { 
     score: 0, drachmes: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, prestige: 0, streakFreeze: 0, lastActiveDate: "",
-    unlockedAvatars: [], unlockedThemes: ["theme-dark", "theme-light", "theme-olympe"],
+    unlockedAvatars: ["👶"], unlockedThemes: ["theme-dark", "theme-light", "theme-olympe"],
+    activeAvatar: "👶", activeTheme: "theme-dark",
     history: {}, dailyQuests: { date: "", list: [] }, chronoRecords: [], activityLog: {}
 };
 
@@ -92,7 +97,6 @@ function playTone(freqs, duration) {
 
 function getLevel() { return Math.min(20, Math.floor(state.score / 1000) + 1); }
 
-// Gestion du Calendrier d'Assiduité (Vérification et sauvegarde journalière)
 function checkDailyStreakAndCalendar() {
     const today = new Date().toISOString().split('T')[0];
     if (!state.activityLog) state.activityLog = {};
@@ -101,35 +105,23 @@ function checkDailyStreakAndCalendar() {
     if (state.lastActiveDate && state.lastActiveDate !== today) {
         const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-        // Si rupture de la chaîne d'assiduité d'un jour entier
         if (state.lastActiveDate !== yesterdayStr && state.streak > 0) {
-            if ((state.streakFreeze || 0) > 0) {
-                state.streakFreeze--;
-                alert("❄️ Bouclier de Série activé ! Votre série de jours consécutifs a été sauvée.");
-            } else {
-                state.streak = 0;
-            }
+            if ((state.streakFreeze || 0) > 0) { state.streakFreeze--; alert("❄️ Bouclier de Série activé ! Votre progression est protégée."); } 
+            else { state.streak = 0; }
         }
     }
-    state.lastActiveDate = today;
-    localStorage.setItem('greekMasterV9', JSON.stringify(state));
+    state.lastActiveDate = today; saveAndRefresh();
 }
 
-// Rendu graphique du calendrier d'assiduité (21 jours coulissants)
 function renderCalendarHeatmap() {
-    const container = document.getElementById('calendar-heatmap');
-    let html = '';
+    const container = document.getElementById('calendar-heatmap'); let html = '';
     for (let i = 20; i >= 0; i--) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
+        const d = new Date(); d.setDate(d.getDate() - i); const dateStr = d.toISOString().split('T')[0];
         const xpEarned = state.activityLog[dateStr] || 0;
-
         let intensityLvl = 0;
         if (xpEarned > 0 && xpEarned <= 40) intensityLvl = 1;
         else if (xpEarned > 40 && xpEarned <= 120) intensityLvl = 2;
         else if (xpEarned > 120) intensityLvl = 3;
-
         html += `<div class="cal-day day-lvl-${intensityLvl}" title="${dateStr} : +${xpEarned} XP"></div>`;
     }
     container.innerHTML = html;
@@ -163,10 +155,7 @@ function updateQuestProgress(id, amount) {
 
 function renderQuestsUI() {
     document.getElementById('quests-list').innerHTML = state.dailyQuests.list.map(q => `
-        <div class="quest-item ${q.done ? 'done' : ''}">
-            <span>${q.desc}</span>
-            <span><b>${q.done ? '✅ Complété' : `${q.current}/${q.target}`}</b></span>
-        </div>
+        <div class="quest-item ${q.done ? 'done' : ''}"><span>${q.desc}</span><span><b>${q.done ? '✅ Complété' : `${q.current}/${q.target}`}</b></span></div>
     `).join('');
 }
 
@@ -190,7 +179,6 @@ function renderExercise() {
     
     if (type === 'chrono') { timerBox.classList.remove('timer-hidden'); if(!chronoTimer) { chronoScore = 0; startChrono(); } document.getElementById('chrono-score-val').innerText = chronoScore; } 
     else { timerBox.classList.add('timer-hidden'); stopChrono(); }
-
     if (type === 'association') { buildAssociationGame(); return; }
 
     currentLetter = getNextLetter();
@@ -232,7 +220,6 @@ function buildAssociationGame() {
         cards.push({ id: item.nom, text: item.nom, type: "french" });
     });
     cards.sort(() => Math.random() - 0.5);
-
     let html = `<h2>🧩 Jeu d'Association</h2><p>Liez les paires correspondantes !</p><div class="association-grid">`;
     cards.forEach((card, idx) => { html += `<button id="assoc-card-${idx}" class="assoc-card" onclick="selectAssocCard(${idx}, '${card.id}')">${card.text}</button>`; });
     container.innerHTML = html + `</div>`;
@@ -274,26 +261,19 @@ window.validateText = function() {
 };
 
 function processResult(isCorrect, correctAnswerDisplay) {
-    const type = document.getElementById('exercise-select').value;
-    const today = new Date().toISOString().split('T')[0];
+    const type = document.getElementById('exercise-select').value; const today = new Date().toISOString().split('T')[0];
     if(!state.history[currentLetter.nom]) state.history[currentLetter.nom] = {errors: 0, total: 0};
     state.history[currentLetter.nom].total++;
-    
     const input = document.getElementById('answer'); if(input) input.disabled = true;
 
     if (isCorrect) {
         triggerVibrate(35); state.currentCombo = Math.min(3, state.currentCombo + 1);
         let baseXP = type === 'rattrapage' ? 20 : 10;
-        let gainedXP = baseXP * state.currentCombo;
-        let gainedDrachmes = 10 * state.currentCombo;
-        
+        let gainedXP = baseXP * state.currentCombo; let gainedDrachmes = 10 * state.currentCombo;
         state.score += gainedXP; state.drachmes += gainedDrachmes; state.streak++;
-        state.activityLog[today] = (state.activityLog[today] || 0) + gainedXP; // Log d'assiduité
-        
+        state.activityLog[today] = (state.activityLog[today] || 0) + gainedXP;
         if(type === 'chrono') { timeLeft += 2; chronoScore += gainedXP; document.getElementById('chrono-score-val').innerText = chronoScore; }
-        
         updateQuestProgress("gain_xp", gainedXP); updateQuestProgress("answers", 1); updateQuestProgress("drachmes", gainedDrachmes);
-
         if(state.streak > (state.highestStreak || 0)) state.highestStreak = state.streak;
         if(input) input.classList.add('feedback-success');
         playTone([523.25, 659.25, 783.99], 0.12);
@@ -301,24 +281,20 @@ function processResult(isCorrect, correctAnswerDisplay) {
         triggerVibrate([60, 40, 60]); state.currentCombo = 0; state.streak = 0;
         state.history[currentLetter.nom].errors++; if(type === 'chrono') timeLeft = Math.max(0, timeLeft - 5);
         playTone([220, 180], 0.2);
-        
         const container = document.getElementById('exercise-container');
         const mneDiv = document.createElement('div'); mneDiv.className = "mnemonic-text"; mneDiv.innerText = `💡 Aide : ${currentLetter.mne}`;
         container.insertBefore(mneDiv, container.lastChild);
         if(input) { input.classList.add('feedback-error'); input.value = `Réponse : ${correctAnswerDisplay}`; }
     }
-    saveAndRefresh(); setTimeout(renderExercise, isCorrect ? 1000 : 2600);
+    saveAndRefresh(); verifyAndGenerateQuests();
+    setTimeout(renderExercise, isCorrect ? 1000 : 2600);
 }
 
 function startChrono() {
     timeLeft = 60; document.getElementById('timer-val').innerText = timeLeft;
     chronoTimer = setInterval(() => {
         timeLeft--; document.getElementById('timer-val').innerText = timeLeft;
-        if(timeLeft <= 0) { 
-            stopChrono(); saveChronoRecord(chronoScore);
-            alert(`Fin du chrono ! Session terminée avec ${chronoScore} XP.`); 
-            document.getElementById('exercise-select').value = 'qcm'; renderExercise(); 
-        }
+        if(timeLeft <= 0) { stopChrono(); saveChronoRecord(chronoScore); alert(`Fin du chrono ! Session : ${chronoScore} XP.`); document.getElementById('exercise-select').value = 'qcm'; renderExercise(); }
     }, 1000);
 }
 function stopChrono() { clearInterval(chronoTimer); chronoTimer = null; }
@@ -344,11 +320,10 @@ window.startSpeech = function() {
     rec.start();
 };
 
-// Système Import/Export de fichiers JSON locaux
 window.exportSave = function() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
     const dlAnchor = document.createElement('a'); dlAnchor.setAttribute("href", dataStr);
-    dlAnchor.setAttribute("download", `grec_master_save_${new Date().toISOString().split('T')[0]}.json`);
+    dlAnchor.setAttribute("download", `grec_master_save.json`);
     document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
 };
 
@@ -359,49 +334,59 @@ window.importSave = function(event) {
         try {
             const importedState = JSON.parse(e.target.result);
             if (importedState.score !== undefined && importedState.history) {
-                state = importedState; saveAndRefresh(); checkDailyStreakAndCalendar();
-                alert("📂 Sauvegarde importée avec succès ! Synchronisation de l'arène.");
-                renderExercise();
-            } else { alert("Fichier JSON de sauvegarde invalide."); }
-        } catch (err) { alert("Erreur lors de la lecture du fichier."); }
+                state = importedState; saveAndRefresh(); checkDailyStreakAndCalendar(); alert("📂 Sauvegarde importée !"); renderExercise();
+            } else { alert("JSON Invalide."); }
+        } catch (err) { alert("Erreur."); }
     };
     reader.readAsText(file);
 };
 
-// Logique d'achat d'objets avec de vrais Drachmes
+// Logique d'achat d'objets ou d'avatars/thèmes
 window.buyItem = function(type, cost, value) {
-    if (state.drachmes < cost) { alert("🪙 Drachmes insuffisants ! Effectuez des exercices pour en récolter."); return; }
-    state.drachmes -= cost;
-    triggerVibrate(50); playTone([523.25, 783.99, 1046.50], 0.2);
+    if (type !== 'equip-avatar' && type !== 'equip-theme') {
+        if (state.drachmes < cost) { alert("🪙 Drachmes insuffisants !"); return; }
+        state.drachmes -= cost; triggerVibrate(50); playTone([523.25, 783.99, 1046.50], 0.2);
+    }
 
     if (type === 'freeze') { state.streakFreeze = (state.streakFreeze || 0) + 1; } 
-    else if (type === 'avatar') { state.unlockedAvatars.push(value); } 
-    else if (type === 'theme') { state.unlockedThemes.push(value); }
+    else if (type === 'avatar') { state.unlockedAvatars.push(value); state.activeAvatar = value; } 
+    else if (type === 'theme') { state.unlockedThemes.push(value); state.activeTheme = value; }
+    else if (type === 'equip-avatar') { state.activeAvatar = value; }
+    else if (type === 'equip-theme') { state.activeTheme = value; }
     
     saveAndRefresh(); openShopMenuUI();
 };
 
+// Rendu unifié de la boutique pour le choix dynamique de l'avatar et du thème actif
 function openShopMenuUI() {
-    const lvl = getLevel(); document.getElementById('freeze-count-val').innerText = state.streakFreeze || 0;
+    document.getElementById('freeze-count-val').innerText = state.streakFreeze || 0;
     
-    // Rendu des 5 avatars achetables
+    // Rendu dynamique complet des 20 Avatars
     document.getElementById('avatars-shop-pool').innerHTML = shopAvatars.map(a => {
         const isOwned = state.unlockedAvatars.includes(a.emoji);
-        return `<div class="shop-item-box ${isOwned ? 'owned' : ''}" onclick="${isOwned ? `selectAvatar('${a.emoji}')` : `buyItem('avatar', ${a.cost}, '${a.emoji}')`}">
-            ${a.emoji}<br><small style="font-size:0.65rem; font-weight:bold;">${isOwned ? 'Équiper' : `${a.cost} 🪙`}</small>
+        const isActive = state.activeAvatar === a.emoji;
+        let cName = "shop-item-box";
+        if (isActive) cName += " active-equip";
+        else if (isOwned) cName += " owned";
+
+        return `<div class="${cName}" onclick="buyItem('${isOwned ? 'equip-avatar' : 'avatar'}', ${a.cost}, '${a.emoji}')">
+            ${a.emoji}<br><small style="font-size:0.6rem; font-weight:bold;">${isActive ? 'Actif' : (isOwned ? 'Équiper' : `${a.cost} 🪙`)}</small>
         </div>`;
     }).join('');
 
-    // Rendu des 5 thèmes achetables
+    // Rendu dynamique complet des 10 Thèmes
     document.getElementById('themes-shop-pool').innerHTML = shopThemes.map(t => {
         const isOwned = state.unlockedThemes.includes(t.id);
-        return `<button class="theme-shop-btn ${isOwned ? 'owned' : ''}" onclick="${isOwned ? `applyTheme('${t.id}')` : `buyItem('theme', ${t.cost}, '${t.id}')`}">
-            <span>${t.name}</span> <span><b>${isOwned ? 'Activer' : `${t.cost} 🪙`}</b></span>
+        const isActive = state.activeTheme === t.id;
+        let cName = "theme-shop-btn";
+        if (isActive) cName += " active-equip";
+        else if (isOwned) cName += " owned";
+
+        return `<button class="${cName}" onclick="buyItem('${isOwned ? 'equip-theme' : 'theme'}', ${t.cost}, '${t.id}')">
+            <span>${t.name}</span> <small><b>${isActive ? 'Actif' : (isOwned ? 'Choisir' : `${t.cost} 🪙`)}</b></small>
         </button>`;
     }).join('');
 }
-
-window.selectAvatar = function(emoji) { state.activeAvatar = emoji; saveAndRefresh(); };
 
 function saveAndRefresh() {
     const lvl = getLevel(); if (lvl > (state.lastLvl || 1)) { setTimeout(launchCelebration, 200); state.lastLvl = lvl; }
@@ -411,7 +396,13 @@ function saveAndRefresh() {
     document.getElementById('score').innerText = state.score;
     document.getElementById('drachmes-val').innerText = state.drachmes;
     document.getElementById('streak').innerText = state.streak;
-    document.getElementById('avatar-val').innerText = state.activeAvatar || avatarsList[lvl - 1];
+    
+    // Support de l'avatar actif choisi par l'utilisateur
+    if (state.prestige > 0 && state.activeAvatar === "👶") {
+        document.getElementById('avatar-val').innerText = prestigeAvatars[Math.min(state.prestige - 1, prestigeAvatars.length - 1)];
+    } else {
+        document.getElementById('avatar-val').innerText = state.activeAvatar || "👶";
+    }
     
     if (state.prestige > 0) {
         document.getElementById('prestige-badge').style.display = "inline"; document.getElementById('prestige-val').innerText = state.prestige;
@@ -439,7 +430,7 @@ function speak(text) {
 
 window.triggerPrestigeAscension = function() {
     if (getLevel() < 20 || state.score < 20000) return;
-    if (confirm("🏛️ Êtes-vous prêt à monter sur l'Olympe et obtenir un rang de Prestige Divin ?")) {
+    if (confirm("🏛️ Prêt à réinitialiser pour obtenir un rang de Prestige Divin ?")) {
         state.prestige += 1; state.score = 0; state.lastLvl = 1; state.currentCombo = 0; state.streak = 0;
         launchCelebration(); playTone([523.25, 659.25, 783.99, 1046.50], 0.3); saveAndRefresh(); shopModal.close(); renderExercise();
     }
@@ -451,10 +442,10 @@ document.getElementById('btn-stats').onclick = () => {
     const accuracy = totalAnswers > 0 ? Math.round(((totalAnswers - totalErrors) / totalAnswers) * 100) : 100;
     
     document.getElementById('stats-content').innerHTML = `
-        <p>🏆 <span>Rang de Divinité :</span> <b>Prestige ${state.prestige || 0}</b></p>
+        <p>🏆 <span>Rang Divin :</span> <b>Prestige ${state.prestige || 0}</b></p>
         <p>🥇 <span>Niveau Actuel :</span> <b>${getLevel()} / 20</b></p>
-        <p>🔥 <span>Meilleure Série historique :</span> <b>${state.highestStreak || 0}</b></p>
-        <p>🎯 <span>Précision Saisie :</span> <b>${accuracy}%</b></p>
+        <p>🔥 <span>Meilleure Série :</span> <b>${state.highestStreak || 0}</b></p>
+        <p>🎯 <span>Précision :</span> <b>${accuracy}%</b></p>
     `;
     
     const recs = state.chronoRecords || [];
@@ -471,7 +462,6 @@ document.getElementById('close-stats').onclick = () => statsModal.close();
 
 const shopModal = document.getElementById('modal-boutique');
 document.getElementById('btn-boutique').onclick = () => { openShopMenuUI(); shopModal.showModal(); };
-window.applyTheme = function(tId) { state.activeTheme = tId; saveAndRefresh(); shopModal.close(); };
 document.getElementById('close-boutique').onclick = () => shopModal.close();
 
 document.getElementById('btn-fiche').onclick = () => {
