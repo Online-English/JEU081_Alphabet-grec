@@ -71,3 +71,6 @@ dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
 .themes-pool { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
 .theme-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: var(--kbd-bg); color: var(--text); }
 .theme-btn.locked { opacity: 0.3; cursor: not-allowed; }
+.theme-sunset { --bg: #4c1d95; --card: #5b21b6; --text: #fef3c7; --accent: #f59e0b; --success: #34d399; --error: #fb7185; --kbd-bg: #6d28d9; }
+.theme-forest { --bg: #064e3b; --card: #065f46; --text: #d1fae5; --accent: #a3e635; --success: #4ade80; --error: #f87171; --kbd-bg: #047857; }
+.theme-royal { --bg: #312e81; --card: #3730a3; --text: #ffffff; --accent: #fbbf24; --success: #4ade80; --error: #f43f5e; --kbd-bg: #4338ca; }

@@ -36,8 +36,11 @@ const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "⚡", "
 const themesList = [
     { id: "theme-dark", name: "Sombre Abyssal", req: 1 },
     { id: "theme-light", name: "Clarté Épurée", req: 1 },
-    { id: "theme-cyberpunk", name: "Néo Athènes", req: 2 },
-    { id: "theme-olympe", name: "Marbre de l'Olympe", req: 4 }
+    { id: "theme-cyberpunk", name: "Néo Athènes", req: 6 },
+    { id: "theme-olympe", name: "Marbre de l'Olympe", req: 9 },
+    { id: "theme-sunset", name: "Coucher de Soleil Égée", req: 13 },
+    { id: "theme-forest", name: "Forêt des Dryades", req: 17 },
+    { id: "theme-royal", name: "Empire Byzantin", req: 20 }
 ];
 
 // Initialisation d'état enrichie (V5)
@@ -83,7 +86,9 @@ function playTone(freqs, duration) {
     });
 }
 
-function getLevel() { return Math.min(20, Math.floor(state.score / 2000) + 1); }
+function getLevel() { 
+    return Math.min(20, Math.floor(state.score / 1000) + 1); 
+}
 
 function getNextLetter() {
     const lvl = getLevel();
@@ -210,7 +215,7 @@ window.startSpeech = function() {
 
 function saveAndRefresh() {
     const lvl = getLevel();
-    // Activation de la célébration visuelle lors du passage de niveau
+    // Célébration lors du passage de niveau
     if (lvl > (state.lastLvl || 1)) {
         setTimeout(launchCelebration, 200);
         state.lastLvl = lvl;
@@ -222,11 +227,17 @@ function saveAndRefresh() {
     document.getElementById('streak').innerText = state.streak;
     document.getElementById('avatar-val').innerText = avatarsList[lvl - 1];
     
+    // Combo UI
     const cBox = document.getElementById('combo-box');
-    if(state.currentCombo > 1) { cBox.style.display = "block"; document.getElementById('combo-val').innerText = `x${state.currentCombo}`; } 
-    else { cBox.style.display = "none"; }
+    if(state.currentCombo > 1) { 
+        cBox.style.display = "block"; 
+        document.getElementById('combo-val').innerText = `x${state.currentCombo}`; 
+    } else { 
+        cBox.style.display = "none"; 
+    }
     
-    document.getElementById('progress-bar').style.width = `${((state.score % 2000) / 2000) * 100}%`;
+    // Barre de progression (1000 points par palier)
+    document.getElementById('progress-bar').style.width = `${((state.score % 1000) / 1000) * 100}%`;
     document.body.className = state.activeTheme;
     renderDashboard();
 }
