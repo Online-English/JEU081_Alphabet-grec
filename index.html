@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Apprendre le Grec</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maîtrise de l'Alphabet Grec</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,22 +13,27 @@
     </header>
 
     <main>
-        <select id="exercise-select">
-            <option value="">-- Choisir un exercice --</option>
-            <option value="lecture">Lecture (Lettre → Nom)</option>
-            <option value="audition">Audition (Écouter → Lettre)</option>
-            <option value="ecriture">Écriture (Nom → Lettre)</option>
-        </select>
+        <section class="controls">
+            <label for="exercise-select">Choisissez un exercice :</label>
+            <select id="exercise-select">
+                <option value="">-- Sélectionner --</option>
+                <option value="lecture">Lecture (Lettre -> Nom)</option>
+                <option value="audition">Audition (Écouter -> Lettre)</option>
+                <option value="ecriture">Écriture (Nom -> Lettre)</option>
+            </select>
+        </section>
 
         <div id="exercise-container">
-            <p>Veuillez sélectionner un exercice pour commencer.</p>
+            <p>Bienvenue ! Sélectionnez un mode pour commencer l'apprentissage.</p>
         </div>
     </main>
 
     <dialog id="modal-fiche">
-        <h2>Fiche Synthèse</h2>
+        <div class="modal-header">
+            <h2>Fiche Synthèse</h2>
+            <button id="close-modal">Fermer</button>
+        </div>
         <div id="fiche-content"></div>
-        <button onclick="document.getElementById('modal-fiche').close()">Fermer</button>
     </dialog>
 
     <script src="script.js"></script>
