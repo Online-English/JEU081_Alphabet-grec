@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Apprendre le Grec</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Alphabet Grec</h1>
+        <button id="btn-fiche">Fiche Synthèse</button>
+    </header>
+
+    <main>
+        <select id="exercise-select">
+            <option value="">-- Choisir un exercice --</option>
+            <option value="lecture">Lecture (Lettre → Nom)</option>
+            <option value="audition">Audition (Écouter → Lettre)</option>
+            <option value="ecriture">Écriture (Nom → Lettre)</option>
+        </select>
+
+        <div id="exercise-container">
+            <p>Veuillez sélectionner un exercice pour commencer.</p>
+        </div>
+    </main>
+
+    <dialog id="modal-fiche">
+        <h2>Fiche Synthèse</h2>
+        <div id="fiche-content"></div>
+        <button onclick="document.getElementById('modal-fiche').close()">Fermer</button>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
