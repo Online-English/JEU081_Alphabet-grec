@@ -32,7 +32,9 @@ const alphabet = [
     { maj: "ΝΤ", min: "ντ", nom: "D (nt)", mot: "Ντομάτα (Tomate)", type: "combo", mne: "En début de mot, NT se prononce 'D'." }
 ];
 
-const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "⚡", "🔱", "🏹", "🛡️", "⚔️", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "🔱"];
+const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "⚔️", "🛡️", "🏹", "✨", "🔥", "👑"];
+const prestigeAvatars = ["⚡", "🔱", "🏹", "🦉", "🛡️", "🌋", "🍷"]; // Avatars divins exclusifs
+
 const themesList = [
     { id: "theme-dark", name: "Sombre Abyssal", req: 1 },
     { id: "theme-light", name: "Clarté Épurée", req: 1 },
@@ -43,35 +45,26 @@ const themesList = [
     { id: "theme-royal", name: "Empire Byzantin", req: 20 }
 ];
 
-// Initialisation d'état enrichie (V5)
-let state = JSON.parse(localStorage.getItem('greekMasterV5')) || { score: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, history: {}, activeAvatar: "👶", activeTheme: "theme-dark" };
+// État de l'application (Support Prestige intégré)
+let state = JSON.parse(localStorage.getItem('greekMasterV6')) || { score: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, prestige: 0, history: {}, activeTheme: "theme-dark" };
 let currentLetter = null;
 let isSlowAudio = false;
 let chronoTimer = null;
 let timeLeft = 60;
 
-// Générateur d'effets visuels de célébration (Confettis)
 function launchCelebration() {
-    for (let i = 0; i < 75; i++) {
-        const p = document.createElement('div');
-        p.className = 'confetti-particle';
+    for (let i = 0; i < 80; i++) {
+        const p = document.createElement('div'); p.className = 'confetti-particle';
         p.style.left = Math.random() * 100 + 'vw';
         p.style.backgroundColor = ['#ff007f', '#00ffcc', '#f59e0b', '#22c55e', '#6366f1'][Math.floor(Math.random() * 5)];
         p.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
         p.style.animationDelay = Math.random() * 0.4 + 's';
         p.style.width = p.style.height = (Math.random() * 6 + 6) + 'px';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 3500);
+        document.body.appendChild(p); setTimeout(() => p.remove(), 3500);
     }
 }
 
-// Notifications de Rappel Locales
-function initNotifications() {
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-    }
-}
-
+function initNotifications() { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); }
 function triggerVibrate(p) { if ("vibrate" in navigator) navigator.vibrate(p); }
 
 function playTone(freqs, duration) {
@@ -80,30 +73,28 @@ function playTone(freqs, duration) {
         const osc = ctx.createOscillator(); const gain = ctx.createGain();
         osc.connect(gain); gain.connect(ctx.destination);
         osc.frequency.setValueAtTime(f, ctx.currentTime + (i * 0.08));
-        gain.gain.setValueAtTime(0.05, ctx.currentTime + (i * 0.08));
+        gain.gain.setValueAtTime(0.04, ctx.currentTime + (i * 0.08));
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i * 0.08) + duration);
         osc.start(ctx.currentTime + (i * 0.08)); osc.stop(ctx.currentTime + (i * 0.08) + duration);
     });
 }
 
-function getLevel() { 
-    return Math.min(20, Math.floor(state.score / 1000) + 1); 
-}
+// 1000 points par niveau
+function getLevel() { return Math.min(20, Math.floor(state.score / 1000) + 1); }
 
 function getNextLetter() {
     const lvl = getLevel();
-    const pool = alphabet.filter(item => item.type === 'lettre' || lvl >= 2);
+    const pool = alphabet.filter(item => item.type === 'lettre' || lvl >= 2 || state.prestige > 0);
     const unseen = pool.filter(l => !state.history[l.nom] || state.history[l.nom].total === 0);
     if (unseen.length > 0) return unseen[Math.floor(Math.random() * unseen.length)];
     return pool.sort((a,b) => ((state.history[b.nom]?.errors||0)/(state.history[b.nom]?.total||1)) - ((state.history[a.nom]?.errors||0)/(state.history[a.nom]?.total||1)))[Math.floor(Math.random() * Math.min(3, pool.length))];
 }
 
-// Clavier virtuel dynamique incluant le Sigma final (ς)
 function generateKeyboardHTML() {
     let html = `<div class="virtual-keyboard">`;
     alphabet.filter(l => l.type === 'lettre').forEach(l => {
         html += `<button class="kbd-key" onclick="pressKey('${l.maj}')">${l.maj}</button>`;
-        if(l.maj === "Σ") html += `<button class="kbd-key" onclick="pressKey('ς')">ς</button>`; // Ajout du Sigma final
+        if(l.maj === "Σ") html += `<button class="kbd-key" onclick="pressKey('ς')">ς</button>`;
     });
     html += `<button class="kbd-key backspace" onclick="pressKey('BACK')">⌫</button></div>`;
     return html;
@@ -130,9 +121,7 @@ function renderExercise() {
     } else if (type === 'ecriture' || type === 'audition') {
         const isAud = type === 'audition';
         html += isAud ? `<p>Écoutez le son :</p><button onclick="speak('${currentLetter.nom}')" style="font-size:3rem; background:none; border:none; cursor:pointer;">🔊</button>` : `<p>Lettre pour :</p><h3>${currentLetter.nom}</h3>`;
-        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj}">`;
-        html += generateKeyboardHTML();
-        html += `<button class="valider-btn" onclick="validateText()">Valider</button>`;
+        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj}">` + generateKeyboardHTML() + `<button class="valider-btn" onclick="validateText()">Valider</button>`;
         if(isAud) setTimeout(() => speak(currentLetter.nom), 300);
     } else if (type === 'oral') {
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><button id="mic-trigger" class="mic-btn" onclick="startSpeech()">🎙️</button><div id="oral-transcript">Prêt...</div>`;
@@ -147,14 +136,10 @@ window.pressKey = function(c) {
 };
 
 window.checkAnswer = function(selected, correct) { processResult(selected.toLowerCase() === correct.toLowerCase(), correct); };
-
 window.validateText = function() { 
     const i = document.getElementById('answer'); 
     let isCorrect = i.value.trim().toLowerCase() === i.dataset.correct.toLowerCase();
-    
-    // Souplesse d'évaluation pour le Sigma (accepte la majuscule, la minuscule ou le ς final)
     if(i.dataset.correct === "Σ" && (i.value.trim() === "σ" || i.value.trim() === "ς" || i.value.trim() === "Σ")) isCorrect = true;
-    
     processResult(isCorrect, i.dataset.correct); 
 };
 
@@ -163,8 +148,7 @@ function processResult(isCorrect, correctAnswerDisplay) {
     if(!state.history[currentLetter.nom]) state.history[currentLetter.nom] = {errors: 0, total: 0};
     state.history[currentLetter.nom].total++;
     
-    const input = document.getElementById('answer');
-    if(input) input.disabled = true;
+    const input = document.getElementById('answer'); if(input) input.disabled = true;
 
     if (isCorrect) {
         triggerVibrate(35); state.currentCombo = Math.min(3, state.currentCombo + 1);
@@ -175,8 +159,7 @@ function processResult(isCorrect, correctAnswerDisplay) {
         playTone([523.25, 659.25, 783.99], 0.12);
     } else {
         triggerVibrate([60, 40, 60]); state.currentCombo = 0; state.streak = 0;
-        state.history[currentLetter.nom].errors++;
-        if(type === 'chrono') timeLeft = Math.max(0, timeLeft - 5);
+        state.history[currentLetter.nom].errors++; if(type === 'chrono') timeLeft = Math.max(0, timeLeft - 5);
         playTone([220, 180], 0.2);
         
         const container = document.getElementById('exercise-container');
@@ -185,8 +168,7 @@ function processResult(isCorrect, correctAnswerDisplay) {
         container.insertBefore(mneDiv, container.lastChild);
         if(input) { input.classList.add('feedback-error'); input.value = `Réponse : ${correctAnswerDisplay}`; }
     }
-    saveAndRefresh();
-    setTimeout(renderExercise, isCorrect ? 1000 : 2600);
+    saveAndRefresh(); setTimeout(renderExercise, isCorrect ? 1000 : 2600);
 }
 
 function startChrono() {
@@ -215,28 +197,27 @@ window.startSpeech = function() {
 
 function saveAndRefresh() {
     const lvl = getLevel();
-    // Célébration lors du passage de niveau
-    if (lvl > (state.lastLvl || 1)) {
-        setTimeout(launchCelebration, 200);
-        state.lastLvl = lvl;
-    }
+    if (lvl > (state.lastLvl || 1)) { setTimeout(launchCelebration, 200); state.lastLvl = lvl; }
     
-    localStorage.setItem('greekMasterV5', JSON.stringify(state));
+    localStorage.setItem('greekMasterV6', JSON.stringify(state));
     document.getElementById('level-val').innerText = lvl;
     document.getElementById('score').innerText = state.score;
     document.getElementById('streak').innerText = state.streak;
-    document.getElementById('avatar-val').innerText = avatarsList[lvl - 1];
     
-    // Combo UI
-    const cBox = document.getElementById('combo-box');
-    if(state.currentCombo > 1) { 
-        cBox.style.display = "block"; 
-        document.getElementById('combo-val').innerText = `x${state.currentCombo}`; 
-    } else { 
-        cBox.style.display = "none"; 
+    // Attribution de l'avatar (classique ou divin si prestige)
+    if (state.prestige > 0) {
+        document.getElementById('avatar-val').innerText = prestigeAvatars[Math.min(state.prestige - 1, prestigeAvatars.length - 1)];
+        document.getElementById('prestige-badge').style.display = "inline";
+        document.getElementById('prestige-val').innerText = state.prestige;
+    } else {
+        document.getElementById('avatar-val').innerText = avatarsList[lvl - 1];
+        document.getElementById('prestige-badge').style.display = "none";
     }
     
-    // Barre de progression (1000 points par palier)
+    const cBox = document.getElementById('combo-box');
+    if(state.currentCombo > 1) { cBox.style.display = "block"; document.getElementById('combo-val').innerText = `x${state.currentCombo}`; } 
+    else { cBox.style.display = "none"; }
+    
     document.getElementById('progress-bar').style.width = `${((state.score % 1000) / 1000) * 100}%`;
     document.body.className = state.activeTheme;
     renderDashboard();
@@ -244,7 +225,8 @@ function saveAndRefresh() {
 
 function renderDashboard() {
     const lvl = getLevel();
-    document.getElementById('dashboard-grid').innerHTML = alphabet.filter(i => i.type === 'lettre' || lvl >= 2).map(l => {
+    const pool = alphabet.filter(i => i.type === 'lettre' || lvl >= 2 || state.prestige > 0);
+    document.getElementById('dashboard-grid').innerHTML = pool.map(l => {
         const h = state.history[l.nom]; let s = "";
         if(h && h.total > 0) s = (h.errors/h.total < 0.25) ? "mastered" : "learning";
         return `<div class="dash-cell ${s}">${l.maj}</div>`;
@@ -256,19 +238,28 @@ function speak(text) {
     u.lang = 'el-GR'; u.rate = isSlowAudio ? 0.45 : 0.85; window.speechSynthesis.speak(u);
 }
 
-// Logic Menus Modaux & Statistiques enrichies
+// Bouton Héroïque d'ascension au Prestige
+window.triggerPrestigeAscension = function() {
+    if (getLevel() < 20 || state.score < 20000) return;
+    if (confirm("🏛️ Êtes-vous prêt à sacrifier vos points actuels pour monter sur l'Olympe et obtenir un rang de Prestige Divin ?")) {
+        state.prestige += 1; state.score = 0; state.lastLvl = 1;
+        state.currentCombo = 0; state.streak = 0;
+        launchCelebration(); playTone([523.25, 659.25, 783.99, 1046.50], 0.3);
+        saveAndRefresh(); shopModal.close(); renderExercise();
+    }
+};
+
+// Menus et interfaces
 const statsModal = document.getElementById('modal-stats');
 document.getElementById('btn-stats').onclick = () => {
-    let totalAnswers = 0, totalErrors = 0;
-    Object.values(state.history).forEach(h => { totalAnswers += h.total; totalErrors += h.errors; });
+    let totalAnswers = 0, totalErrors = 0; Object.values(state.history).forEach(h => { totalAnswers += h.total; totalErrors += h.errors; });
     const accuracy = totalAnswers > 0 ? Math.round(((totalAnswers - totalErrors) / totalAnswers) * 100) : 100;
-    
     document.getElementById('stats-content').innerHTML = `
-        <p>🏆 <span>Niveau Actuel :</span> <b>${getLevel()} / 20</b></p>
-        <p>🔥 <span>Meilleure Série (Streak) :</span> <b>${state.highestStreak || 0}</b></p>
-        <p>🎯 <span>Précision Globale :</span> <b>${accuracy}%</b></p>
-        <p>📝 <span>Exercices Effectués :</span> <b>${totalAnswers}</b></p>
-        <p>❌ <span>Nombre d'Erreurs :</span> <b>${totalErrors}</b></p>
+        <p>🏆 <span>Rang Divin :</span> <b>Prestige ${state.prestige || 0}</b></p>
+        <p>🥇 <span>Niveau Actuel :</span> <b>${getLevel()} / 20</b></p>
+        <p>🔥 <span>Meilleure Série :</span> <b>${state.highestStreak || 0}</b></p>
+        <p>🎯 <span>Précision :</span> <b>${accuracy}%</b></p>
+        <p>📝 <span>Réponses fournies :</span> <b>${totalAnswers}</b></p>
     `;
     statsModal.showModal();
 };
@@ -277,12 +268,18 @@ document.getElementById('close-stats').onclick = () => statsModal.close();
 const shopModal = document.getElementById('modal-boutique');
 document.getElementById('btn-boutique').onclick = () => {
     const lvl = getLevel();
-    document.getElementById('avatars-pool').innerHTML = avatarsList.map((a, i) => `<span class="avatar-item ${i < lvl ? 'unlocked' : ''}">${a}</span>`).join('');
-    document.getElementById('themes-pool').innerHTML = themesList.map(t => {
-        const locked = lvl < t.req;
+    document.getElementById('avatars-pool').innerHTML = avatarsList.map((a, i) => `<span class="avatar-item ${(i < lvl || state.prestige > 0) ? 'unlocked' : ''}">${a}</span>`).join('');
+    
+    let shopHtml = themesList.map(t => {
+        const locked = (lvl < t.req && state.prestige === 0);
         return `<button class="theme-btn ${locked ? 'locked' : ''}" ${locked ? 'disabled' : ''} onclick="applyTheme('${t.id}')">${t.name} ${locked ? `(Niv. ${t.req})` : ''}</button>`;
     }).join('');
-    shopModal.showModal();
+    
+    // Affichage conditionnel du bouton Prestige divin
+    if (lvl >= 20 && state.score >= 20000) {
+        shopHtml += `<button class="btn-prestige" style="display:block;" onclick="triggerPrestigeAscension()">⚡ ACTIVER LE PRESTIGE DIVIN (+1)</button>`;
+    }
+    document.getElementById('themes-pool').innerHTML = shopHtml; shopModal.showModal();
 };
 window.applyTheme = function(tId) { state.activeTheme = tId; saveAndRefresh(); shopModal.close(); };
 document.getElementById('close-boutique').onclick = () => shopModal.close();
@@ -293,7 +290,7 @@ document.getElementById('btn-fiche').onclick = () => {
 };
 document.getElementById('close-modal').onclick = () => document.getElementById('modal-fiche').close();
 
-document.getElementById('slow-toggle').onclick = (e) => { isSlowAudio = !isSlowAudio; e.target.classList.toggle('active', isSlowAudio); e.target.innerText = isSlowAudio ? "🐢 Lent" : "🐢 Audio"; };
+document.getElementById('slow-toggle').onclick = (e) => { isSlowAudio = !isSlowAudio; e.target.classList.toggle('active', isSlowAudio); e.target.innerText = isSlowAudio ? "Lent" : "Audio"; };
 document.getElementById('exercise-select').onchange = renderExercise;
 document.addEventListener('keydown', (e) => { if(e.key === 'Enter') window.validateText(); });
 
