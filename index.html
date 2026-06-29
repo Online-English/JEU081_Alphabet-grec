@@ -4,37 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
-    <title>Grec Master</title>
+    <title>Grec Master Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="top-bar">
         <button id="theme-toggle">🌙</button>
-        <button id="btn-fiche">📚 Fiche Synthèse</button>
+        <button id="slow-toggle" class="toggle-btn">🐢 Audio Lent : OFF</button>
+        <button id="btn-fiche">📚 Fiche</button>
     </div>
     
     <header>
-        <h1>Grec Master</h1>
-        <div id="stats">⚡ Score: <span id="score">0</span> | 🔥 Série: <span id="streak">0</span></div>
+        <div class="level-badge">Niveau <span id="level-val">1</span></div>
+        <div id="stats">⚡ <span id="score">0</span> / 40000 XP | 🔥 Série: <span id="streak">0</span></div>
     </header>
 
     <main>
         <div class="progress-container"><div id="progress-bar"></div></div>
         
         <select id="exercise-select">
-            <option value="lecture">Lecture (Lettre → Nom)</option>
-            <option value="audition">Audition (Écouter → Lettre)</option>
-            <option value="ecriture">Écriture (Nom → Lettre)</option>
+            <option value="qcm">QCM (Idéal Débutant)</option>
+            <option value="lecture">Lecture (Saisie)</option>
+            <option value="audition">Audition</option>
+            <option value="ecriture">Écriture</option>
+            <option value="oral">🗣️ Expression Orale</option>
         </select>
 
         <div id="exercise-container">
-            <p>Chargement de l'exercice...</p>
+            <p>Chargement de l'arène...</p>
         </div>
+
+        <h3>Votre Carte de Maîtrise</h3>
+        <div id="dashboard-grid" class="dashboard-grid"></div>
     </main>
 
     <dialog id="modal-fiche">
         <div class="modal-header">
-            <h2>Alphabet Grec Moderne</h2>
+            <h2>Alphabet & Combinaisons</h2>
             <button id="close-modal">❌</button>
         </div>
         <div id="fiche-content"></div>

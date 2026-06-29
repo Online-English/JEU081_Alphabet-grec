@@ -1,7 +1,8 @@
 {
-  "name": "Grec Master",
-  "short_name": "Grec",
+  "name": "Grec Master Pro",
+  "short_name": "GrecPro",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff"
+  "background_color": "#0f172a",
+  "theme-color": "#6366f1"
 }
