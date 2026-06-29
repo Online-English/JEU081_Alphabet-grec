@@ -4,34 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
-    <title>Grec Master Pro</title>
+    <title>Grec Master Ultra</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="theme-dark">
     <div class="top-bar">
-        <button id="theme-toggle">🌙</button>
+        <button id="btn-boutique">🛍️ Boutique & Thèmes</button>
         <button id="slow-toggle" class="toggle-btn">🐢 Audio Lent : OFF</button>
         <button id="btn-fiche">📚 Fiche</button>
     </div>
     
     <header>
-        <div class="level-badge">Niveau <span id="level-val">1</span></div>
-        <div id="stats">⚡ <span id="score">0</span> / 40000 XP | 🔥 Série: <span id="streak">0</span></div>
+        <div class="header-main">
+            <div class="avatar-badge"><span id="avatar-val">👶</span></div>
+            <div class="level-badge">Niv. <span id="level-val">1</span></div>
+            <div class="combo-badge" id="combo-box">Combo <span id="combo-val">x1</span> 🔥</div>
+        </div>
+        <div id="stats">⚡ <span id="score">0</span> XP | Série actuelle : <span id="streak">0</span></div>
+        <div id="timer-container" class="timer-hidden">⏱️ Temps restant : <span id="timer-val">60</span>s</div>
     </header>
 
     <main>
         <div class="progress-container"><div id="progress-bar"></div></div>
         
         <select id="exercise-select">
-            <option value="qcm">QCM (Idéal Débutant)</option>
-            <option value="lecture">Lecture (Saisie)</option>
-            <option value="audition">Audition</option>
-            <option value="ecriture">Écriture</option>
-            <option value="oral">🗣️ Expression Orale</option>
+            <option value="qcm">Mode QCM (Entraînement)</option>
+            <option value="lecture">Mode Lecture (Saisie)</option>
+            <option value="audition">Mode Audition (Écoute)</option>
+            <option value="ecriture">Mode Écriture (Clavier Grec)</option>
+            <option value="oral">🗣️ Expression Orale (Micro)</option>
+            <option value="chrono">⏱️ CONTRE-LA-MONTRE (QCM Rapide)</option>
         </select>
 
         <div id="exercise-container">
-            <p>Chargement de l'arène...</p>
+            <p>Initialisation du temple du savoir...</p>
         </div>
 
         <h3>Votre Carte de Maîtrise</h3>
@@ -44,6 +50,21 @@
             <button id="close-modal">❌</button>
         </div>
         <div id="fiche-content"></div>
+    </dialog>
+
+    <dialog id="modal-boutique">
+        <div class="modal-header">
+            <h2>Boutique des Dieux</h2>
+            <button id="close-boutique">❌</button>
+        </div>
+        <div class="shop-section">
+            <h3>Vos Avatars Débloqués</h3>
+            <div id="avatars-pool" class="avatars-pool"></div>
+        </div>
+        <div class="shop-section">
+            <h3>Thèmes d'Arène</h3>
+            <div id="themes-pool" class="themes-pool"></div>
+        </div>
     </dialog>
 
     <script src="script.js"></script>
