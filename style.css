@@ -1,12 +1,16 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-header { display: flex; justify-content: space-between; align-items: center; background: #0055a4; color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 20px; }
-h1 { margin: 0; font-size: 1.5rem; }
-.controls { text-align: center; margin-bottom: 20px; }
-#exercise-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; min-height: 200px; }
-#modal-fiche { padding: 0; border: none; border-radius: 12px; width: 90%; max-width: 500px; }
-.modal-header { display: flex; justify-content: space-between; padding: 15px; background: #eee; }
-#fiche-content { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-.letter-card { border: 1px solid #ddd; padding: 10px; text-align: center; border-radius: 5px; }
-button { cursor: pointer; padding: 8px 16px; background: #0055a4; color: white; border: none; border-radius: 4px; }
-button:hover { background: #003d7a; }
-.big-char { font-size: 4rem; display: block; margin: 10px 0; }
+:root { --bg: #f0f2f5; --card: #ffffff; --text: #333; --accent: #6366f1; }
+.dark-mode { --bg: #1a1b26; --card: #24283b; --text: #c0caf5; }
+
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: 0.3s; margin: 0; padding: 20px; }
+header { display: flex; justify-content: space-between; padding: 20px; align-items: center; }
+#theme-toggle { cursor: pointer; border: none; background: none; font-size: 1.5rem; }
+#exercise-container { background: var(--card); padding: 40px; border-radius: 20px; margin: 20px auto; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+
+.progress-container { width: 100%; max-width: 500px; height: 8px; background: #ddd; border-radius: 4px; margin: 0 auto; overflow: hidden; }
+#progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.5s; }
+
+input { padding: 12px; border-radius: 8px; border: 2px solid #ccc; width: 80%; font-size: 1.2rem; margin-top: 20px; }
+button { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+.feedback-success { border-color: #22c55e !important; background: #dcfce7; }
+.feedback-error { border-color: #ef4444 !important; background: #fee2e2; }
+.big-char { font-size: 4rem; display: block; margin: 20px 0; }

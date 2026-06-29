@@ -1,65 +1,66 @@
 const alphabet = [
-    { maj: "Α", min: "α", nom: "Alpha" }, { maj: "Β", min: "β", nom: "Bêta" },
-    { maj: "Γ", min: "γ", nom: "Gamma" }, { maj: "Δ", min: "δ", nom: "Delta" },
-    { maj: "Ε", min: "ε", nom: "Epsilon" }, { maj: "Ζ", min: "ζ", nom: "Zeta" },
-    { maj: "Η", min: "η", nom: "Eta" }, { maj: "Θ", min: "θ", nom: "Theta" },
-    { maj: "Ι", min: "ι", nom: "Iota" }, { maj: "Κ", min: "κ", nom: "Kappa" },
-    { maj: "Λ", min: "λ", nom: "Lambda" }, { maj: "Μ", min: "μ", nom: "Mu" },
-    { maj: "Ν", min: "ν", nom: "Nu" }, { maj: "Ξ", min: "ξ", nom: "Xi" },
-    { maj: "Ο", min: "ο", nom: "Omicron" }, { maj: "Π", min: "π", nom: "Pi" },
-    { maj: "Ρ", min: "ρ", nom: "Rho" }, { maj: "Σ", min: "sigma", nom: "Sigma" },
-    { maj: "Τ", min: "τ", nom: "Tau" }, { maj: "Υ", min: "upsilon", nom: "Upsilon" },
-    { maj: "Φ", min: "φ", nom: "Phi" }, { maj: "Χ", min: "chi", nom: "Chi" },
-    { maj: "Ψ", min: "psi", nom: "Psi" }, { maj: "Ω", min: "omega", nom: "Omega" }
+    { maj: "Α", min: "α", nom: "Alpha", mot: "Αθήνα" }, { maj: "Β", min: "β", nom: "Bêta", mot: "Βιβλίο" },
+    { maj: "Γ", min: "γ", nom: "Gamma", mot: "Γάλα" }, { maj: "Δ", min: "δ", nom: "Delta", mot: "Δέντρο" },
+    { maj: "Ε", min: "ε", nom: "Epsilon", mot: "Ελλάδα" }, { maj: "Ζ", min: "ζ", nom: "Zeta", mot: "Ζωή" },
+    { maj: "Η", min: "η", nom: "Eta", mot: "Ήλιος" }, { maj: "Θ", min: "θ", nom: "Theta", mot: "Θάλασσα" },
+    { maj: "Ι", min: "ι", nom: "Iota", mot: "Ιδέα" }, { maj: "Κ", min: "κ", nom: "Kappa", mot: "Καρδιά" },
+    { maj: "Λ", min: "λ", nom: "Lambda", mot: "Λάδι" }, { maj: "Μ", min: "μ", nom: "Mu", mot: "Μήλο" },
+    { maj: "Ν", min: "ν", nom: "Nu", mot: "Νερό" }, { maj: "Ξ", min: "ξ", nom: "Xi", mot: "Ξύλο" },
+    { maj: "Ο", min: "ο", nom: "Omicron", mot: "Όνομα" }, { maj: "Π", min: "π", nom: "Pi", mot: "Πόλη" },
+    { maj: "Ρ", min: "ρ", nom: "Rho", mot: "Ρόδι" }, { maj: "Σ", min: "σ", nom: "Sigma", mot: "Σπίτι" },
+    { maj: "Τ", min: "τ", nom: "Tau", mot: "Τυρί" }, { maj: "Υ", min: "upsilon", nom: "Ύπνος" },
+    { maj: "Φ", min: "φ", nom: "Phi", mot: "Φως" }, { maj: "Χ", min: "chi", mot: "Χέρι" },
+    { maj: "Ψ", min: "psi", nom: "Ψωμί" }, { maj: "Ω", min: "omega", mot: "Ώρα" }
 ];
 
-const container = document.getElementById('exercise-container');
-const modal = document.getElementById('modal-fiche');
-const select = document.getElementById('exercise-select');
+let state = JSON.parse(localStorage.getItem('greekData')) || { score: 0, streak: 0, history: {} };
 
-// Ouvrir fiche
-document.getElementById('btn-fiche').addEventListener('click', () => {
-    const content = alphabet.map(l => `<div class="letter-card">${l.maj}${l.min}<br><strong>${l.nom}</strong></div>`).join('');
-    document.getElementById('fiche-content').innerHTML = content;
-    modal.showModal();
-});
-document.getElementById('close-modal').addEventListener('click', () => modal.close());
+function getNextLetter() {
+    return alphabet.sort((a, b) => {
+        const rateA = (state.history[a.nom]?.errors || 0) / (state.history[a.nom]?.total || 1);
+        const rateB = (state.history[b.nom]?.errors || 0) / (state.history[b.nom]?.total || 1);
+        return rateB - rateA;
+    })[0];
+}
 
-select.addEventListener('change', (e) => {
-    if(!e.target.value) return;
-    runExercise(e.target.value);
-});
-
-function runExercise(type) {
-    const item = alphabet[Math.floor(Math.random() * alphabet.length)];
-    container.innerHTML = `<h3>Exercice en cours...</h3>`;
+function renderExercise() {
+    const type = document.getElementById('exercise-select').value;
+    const item = getNextLetter();
+    const container = document.getElementById('exercise-container');
     
-    if (type === 'lecture') {
-        container.innerHTML = `<span class="big-char">${item.maj}</span>
-                               <p>Quelle est cette lettre ?</p>
-                               <input type="text" id="answer" placeholder="Nom de la lettre">
-                               <button onclick="check('${item.nom}')">Vérifier</button>`;
-    } else if (type === 'audition') {
-        container.innerHTML = `<h3>Écoutez le nom :</h3>
-                               <button onclick="speak('${item.nom}')">🔊 Écouter</button>
-                               <p>Quelle lettre correspond à ce son ?</p>
-                               <select id="answer">${alphabet.map(l => `<option value="${l.nom}">${l.maj} (${l.nom})</option>`).join('')}</select>
-                               <button onclick="check('${item.nom}')">Vérifier</button>`;
-    } else if (type === 'ecriture') {
-        container.innerHTML = `<p>Écrivez la lettre correspondant à : <strong>${item.nom}</strong></p>
-                               <input type="text" id="answer" placeholder="La lettre (maj ou min)">
-                               <button onclick="check('${item.maj}')">Vérifier</button>`;
+    let html = `<h3>${type.toUpperCase()}</h3>`;
+    if(type === 'lecture') html += `<span class="big-char">${item.maj}</span><input type="text" id="answer" data-correct="${item.nom}" placeholder="Nom de la lettre">`;
+    else if(type === 'ecriture') html += `<p>Lettre pour <strong>${item.nom}</strong></p><input type="text" id="answer" data-correct="${item.maj}" placeholder="Entrez la lettre">`;
+    else html += `<button onclick="speak('${item.nom}')">🔊 Écouter</button><input type="text" id="answer" data-correct="${item.nom}" placeholder="Quelle est cette lettre ?">`;
+    
+    container.innerHTML = html + `<br><button onclick="validate()">Valider</button>`;
+}
+
+function validate() {
+    const input = document.getElementById('answer');
+    const isCorrect = input.value.trim().toLowerCase() === input.dataset.correct.toLowerCase();
+    const item = alphabet.find(i => i.nom === input.dataset.correct || i.maj === input.dataset.correct);
+    
+    if(!state.history[item.nom]) state.history[item.nom] = {errors: 0, total: 0};
+    state.history[item.nom].total++;
+    
+    if (isCorrect) {
+        input.classList.add('feedback-success');
+        state.score += 10; state.streak++;
+    } else {
+        input.classList.add('feedback-error');
+        state.streak = 0; state.history[item.nom].errors++;
     }
+    
+    localStorage.setItem('greekData', JSON.stringify(state));
+    document.getElementById('score').innerText = state.score;
+    document.getElementById('streak').innerText = state.streak;
+    setTimeout(renderExercise, 1000);
 }
 
-function speak(text) {
-    const msg = new SpeechSynthesisUtterance(text);
-    msg.lang = 'el-GR';
-    window.speechSynthesis.speak(msg);
-}
+function speak(text) { new SpeechSynthesisUtterance(text).lang = 'el-GR'; window.speechSynthesis.speak(new SpeechSynthesisUtterance(text)); }
 
-window.check = function(correct) {
-    const userVal = document.getElementById('answer').value;
-    alert(userVal.toLowerCase() === correct.toLowerCase() ? "Bravo !" : "Dommage, c'était : " + correct);
-    runExercise(select.value); // Next
-}
+document.addEventListener('keydown', (e) => { if(e.key === 'Enter') validate(); });
+document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('dark-mode');
+document.getElementById('exercise-select').onchange = renderExercise;
+renderExercise();

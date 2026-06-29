@@ -1,0 +1,7 @@
+{
+  "name": "Grec Master",
+  "short_name": "Grec",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff"
+}
