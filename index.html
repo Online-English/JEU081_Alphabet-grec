@@ -8,25 +8,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="theme-toggle">🌙</button>
+    <div class="top-bar">
+        <button id="theme-toggle">🌙</button>
+        <button id="btn-fiche">📚 Fiche Synthèse</button>
+    </div>
+    
     <header>
         <h1>Grec Master</h1>
-        <div id="stats">Score: <span id="score">0</span> | Streak: <span id="streak">0</span></div>
+        <div id="stats">⚡ Score: <span id="score">0</span> | 🔥 Série: <span id="streak">0</span></div>
     </header>
 
     <main>
         <div class="progress-container"><div id="progress-bar"></div></div>
         
         <select id="exercise-select">
-            <option value="lecture">Lecture (Lettre -> Nom)</option>
-            <option value="audition">Audition (Écouter -> Lettre)</option>
-            <option value="ecriture">Écriture (Nom -> Lettre)</option>
+            <option value="lecture">Lecture (Lettre → Nom)</option>
+            <option value="audition">Audition (Écouter → Lettre)</option>
+            <option value="ecriture">Écriture (Nom → Lettre)</option>
         </select>
 
         <div id="exercise-container">
-            <p>Chargement...</p>
+            <p>Chargement de l'exercice...</p>
         </div>
     </main>
+
+    <dialog id="modal-fiche">
+        <div class="modal-header">
+            <h2>Alphabet Grec Moderne</h2>
+            <button id="close-modal">❌</button>
+        </div>
+        <div id="fiche-content"></div>
+    </dialog>
 
     <script src="script.js"></script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
