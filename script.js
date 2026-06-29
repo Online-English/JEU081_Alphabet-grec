@@ -16,7 +16,7 @@ const alphabet = [
     { maj: "Ο", min: "ο", nom: "Omicron", mot: "Όνομα (Nom)", type: "lettre", mne: "Le petit 'o' tout à fait classique." },
     { maj: "Π", min: "π", nom: "Pi", mot: "Πóλη (Ville)", type: "lettre", mne: "Le fameux nombre géométrique Pi." },
     { maj: "Ρ", min: "ρ", nom: "Rho", mot: "Ρóδι (Grenade)", type: "lettre", mne: "PIÈGE ! Ressemble à un 'p' mais c'est un 'R'." },
-    { maj: "Σ", min: "σ / ς", nom: "Sigma", mot: "Σπίτι (Maison) & Ήλιος (Soleil)", type: "lettre", mne: "Utilise 'σ' au début/milieu d'un mot et 'ς' à la toute fin !" },
+    { maj: "Σ", min: "σ / ς", nom: "Sigma", mot: "Σπίti (Maison)", type: "lettre", mne: "Utilise 'σ' au début/milieu d'un mot et 'ς' à la toute fin !" },
     { maj: "Τ", min: "τ", nom: "Tau", mot: "Τυρί (Fromage)", type: "lettre", mne: "Un 'T' sans barre supérieure à gauche." },
     { maj: "Υ", min: "υ", nom: "Upsilon", mot: "Ύπνος (Sommeil)", type: "lettre", mne: "Une coupe ou un vase pour recueillir le son 'I'." },
     { maj: "Φ", min: "φ", nom: "Phi", mot: "Φως (Lumière)", type: "lettre", mne: "Une ligne verticale qui transperce un cercle." },
@@ -33,11 +33,21 @@ const alphabet = [
 ];
 
 const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "⚔️", "🛡️", "🏹", "✨", "🔥", "👑"];
-const prestigeAvatars = ["⚡", "🔱", "🏹", "🦉", "🛡️", "🌋", "🍷"]; // Avatars divins exclusifs
+const prestigeAvatars = ["⚡", "🔱", "🏹", "🦉", "🛡️", "🌋", "🍷"];
+
+// Liste des 20 Badges pour chaque niveau
+const badgesList = [
+    "🦉 Initié d'Athéna (Niv 1)", "📜 Scribe de l'Agora (Niv 2)", "🏺 Porteur de Jarre (Niv 3)", "🔱 Explorateur d'Atlantis (Niv 4)",
+    "🛡️ Soldat de Sparte (Niv 5)", "🗣️ Orateur du Pnyx (Niv 6)", "🎭 Acteur de Dionysos (Niv 7)", "📐 Disciple de Thalès (Niv 8)",
+    "🏛️ Pilier du Parthénon (Niv 9)", "🏹 Chasseur d'Artémis (Niv 10)", "🏃 Athlète d'Olympie (Niv 11)", "🎨 Poète Homérique (Niv 12)",
+    "🐎 Cavalier d'Alexandre (Niv 13)", "🔮 Oracle de Delphes (Niv 14)", "🦁 Sphinx Mythique (Niv 15)", "🌟 Constellation d'Orion (Niv 16)",
+    "🌋 Forgeron d'Héphaïstos (Niv 17)", "⚔️ Conquérant du Titan (Niv 18)", "🌟 Élu des Constellations (Niv 19)", "⚡ Divinité de l'Olympe (Niv 20)"
+];
 
 const themesList = [
     { id: "theme-dark", name: "Sombre Abyssal", req: 1 },
     { id: "theme-light", name: "Clarté Épurée", req: 1 },
+    { id: "theme-atlantis", name: "Profondeurs d'Atlantis", req: 4 }, // Déblocage Niveau 4
     { id: "theme-cyberpunk", name: "Néo Athènes", req: 6 },
     { id: "theme-olympe", name: "Marbre de l'Olympe", req: 9 },
     { id: "theme-sunset", name: "Coucher de Soleil Égée", req: 13 },
@@ -45,8 +55,7 @@ const themesList = [
     { id: "theme-royal", name: "Empire Byzantin", req: 20 }
 ];
 
-// État de l'application (Support Prestige intégré)
-let state = JSON.parse(localStorage.getItem('greekMasterV6')) || { score: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, prestige: 0, history: {}, activeTheme: "theme-dark" };
+let state = JSON.parse(localStorage.getItem('greekMasterV7')) || { score: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, prestige: 0, history: {}, activeTheme: "theme-dark" };
 let currentLetter = null;
 let isSlowAudio = false;
 let chronoTimer = null;
@@ -79,12 +88,24 @@ function playTone(freqs, duration) {
     });
 }
 
-// 1000 points par niveau
 function getLevel() { return Math.min(20, Math.floor(state.score / 1000) + 1); }
 
 function getNextLetter() {
+    const type = document.getElementById('exercise-select').value;
     const lvl = getLevel();
-    const pool = alphabet.filter(item => item.type === 'lettre' || lvl >= 2 || state.prestige > 0);
+    let pool = alphabet.filter(item => item.type === 'lettre' || lvl >= 2 || state.prestige > 0);
+    
+    // Logique exclusive du Mode Rattrapage
+    if (type === 'rattrapage') {
+        let weakPool = pool.filter(l => {
+            const h = state.history[l.nom];
+            return h && h.total > 0 && (h.errors / h.total) >= 0.40; // Erreurs >= 40%
+        });
+        if (weakPool.length === 0) weakPool = pool.filter(l => (state.history[l.nom]?.errors || 0) > 0); // Fallback erreurs simples
+        if (weakPool.length === 0) weakPool = pool; // Pas d'erreurs détectées
+        return weakPool[Math.floor(Math.random() * weakPool.length)];
+    }
+
     const unseen = pool.filter(l => !state.history[l.nom] || state.history[l.nom].total === 0);
     if (unseen.length > 0) return unseen[Math.floor(Math.random() * unseen.length)];
     return pool.sort((a,b) => ((state.history[b.nom]?.errors||0)/(state.history[b.nom]?.total||1)) - ((state.history[a.nom]?.errors||0)/(state.history[a.nom]?.total||1)))[Math.floor(Math.random() * Math.min(3, pool.length))];
@@ -109,19 +130,22 @@ function renderExercise() {
     else { timerBox.classList.add('timer-hidden'); stopChrono(); }
 
     currentLetter = getNextLetter();
-    let html = `<h2>Mission</h2>`;
     
+    let labelMission = type === 'rattrapage' ? `<h2 style="color:var(--error)">⚠️ RATTRAPAGE (XP X2)</h2>` : `<h2>Mission</h2>`;
+    let html = labelMission;
+    
+    // Le mode Rattrapage utilise par défaut une saisie clavier pour pousser la mémorisation mécanique
     if (type === 'qcm' || type === 'chrono') {
         const opts = [currentLetter.nom];
         while(opts.length < 4) { const r = alphabet[Math.floor(Math.random() * alphabet.length)].nom; if(!opts.includes(r)) opts.push(r); }
         opts.sort(() => Math.random() - 0.5);
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><div class="qcm-grid">` + opts.map(o => `<button class="qcm-btn" onclick="checkAnswer('${o}', '${currentLetter.nom}')">${o}</button>`).join('') + `</div>`;
-    } else if (type === 'lecture') {
+    } else if (type === 'lecture' || type === 'rattrapage') {
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><input type="text" id="answer" data-correct="${currentLetter.nom}" placeholder="Nom de la lettre..."><br><button class="valider-btn" onclick="validateText()">Valider</button>`;
     } else if (type === 'ecriture' || type === 'audition') {
         const isAud = type === 'audition';
         html += isAud ? `<p>Écoutez le son :</p><button onclick="speak('${currentLetter.nom}')" style="font-size:3rem; background:none; border:none; cursor:pointer;">🔊</button>` : `<p>Lettre pour :</p><h3>${currentLetter.nom}</h3>`;
-        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj}">` + generateKeyboardHTML() + `<button class="valider-btn" onclick="validateText()">Valider</button>`;
+        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj} sample">` + generateKeyboardHTML() + `<button class="valider-btn" onclick="validateText()">Valider</button>`;
         if(isAud) setTimeout(() => speak(currentLetter.nom), 300);
     } else if (type === 'oral') {
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><button id="mic-trigger" class="mic-btn" onclick="startSpeech()">🎙️</button><div id="oral-transcript">Prêt...</div>`;
@@ -152,7 +176,12 @@ function processResult(isCorrect, correctAnswerDisplay) {
 
     if (isCorrect) {
         triggerVibrate(35); state.currentCombo = Math.min(3, state.currentCombo + 1);
-        state.score += 10 * state.currentCombo; state.streak++;
+        
+        // Gains de points de base doublés si mode Rattrapage actif
+        let pointsGagnes = type === 'rattrapage' ? 20 : 10;
+        state.score += pointsGagnes * state.currentCombo; 
+        state.streak++;
+        
         if(state.streak > (state.highestStreak || 0)) state.highestStreak = state.streak;
         if(type === 'chrono') timeLeft += 2;
         if(input) input.classList.add('feedback-success');
@@ -199,12 +228,11 @@ function saveAndRefresh() {
     const lvl = getLevel();
     if (lvl > (state.lastLvl || 1)) { setTimeout(launchCelebration, 200); state.lastLvl = lvl; }
     
-    localStorage.setItem('greekMasterV6', JSON.stringify(state));
+    localStorage.setItem('greekMasterV7', JSON.stringify(state));
     document.getElementById('level-val').innerText = lvl;
     document.getElementById('score').innerText = state.score;
     document.getElementById('streak').innerText = state.streak;
     
-    // Attribution de l'avatar (classique ou divin si prestige)
     if (state.prestige > 0) {
         document.getElementById('avatar-val').innerText = prestigeAvatars[Math.min(state.prestige - 1, prestigeAvatars.length - 1)];
         document.getElementById('prestige-badge').style.display = "inline";
@@ -238,29 +266,35 @@ function speak(text) {
     u.lang = 'el-GR'; u.rate = isSlowAudio ? 0.45 : 0.85; window.speechSynthesis.speak(u);
 }
 
-// Bouton Héroïque d'ascension au Prestige
 window.triggerPrestigeAscension = function() {
     if (getLevel() < 20 || state.score < 20000) return;
     if (confirm("🏛️ Êtes-vous prêt à sacrifier vos points actuels pour monter sur l'Olympe et obtenir un rang de Prestige Divin ?")) {
-        state.prestige += 1; state.score = 0; state.lastLvl = 1;
-        state.currentCombo = 0; state.streak = 0;
+        state.prestige += 1; state.score = 0; state.lastLvl = 1; state.currentCombo = 0; state.streak = 0;
         launchCelebration(); playTone([523.25, 659.25, 783.99, 1046.50], 0.3);
         saveAndRefresh(); shopModal.close(); renderExercise();
     }
 };
 
-// Menus et interfaces
+// Interface Modale Stats & Système complet de Badges Dynamiques
 const statsModal = document.getElementById('modal-stats');
 document.getElementById('btn-stats').onclick = () => {
     let totalAnswers = 0, totalErrors = 0; Object.values(state.history).forEach(h => { totalAnswers += h.total; totalErrors += h.errors; });
     const accuracy = totalAnswers > 0 ? Math.round(((totalAnswers - totalErrors) / totalAnswers) * 100) : 100;
+    const userLvl = getLevel();
+
     document.getElementById('stats-content').innerHTML = `
         <p>🏆 <span>Rang Divin :</span> <b>Prestige ${state.prestige || 0}</b></p>
-        <p>🥇 <span>Niveau Actuel :</span> <b>${getLevel()} / 20</b></p>
+        <p>🥇 <span>Niveau Actuel :</span> <b>${userLvl} / 20</b></p>
         <p>🔥 <span>Meilleure Série :</span> <b>${state.highestStreak || 0}</b></p>
         <p>🎯 <span>Précision :</span> <b>${accuracy}%</b></p>
-        <p>📝 <span>Réponses fournies :</span> <b>${totalAnswers}</b></p>
     `;
+    
+    // Injection visuelle de la grille de badges (Débloqués vs Verrouillés)
+    document.getElementById('badges-grid').innerHTML = badgesList.map((badge, index) => {
+        const isUnlocked = userLvl >= (index + 1) || state.prestige > 0;
+        return `<div class="badge-item ${isUnlocked ? 'unlocked' : ''}">${isUnlocked ? badge : "🔒 Niveau " + (index + 1)}</div>`;
+    }).join('');
+
     statsModal.showModal();
 };
 document.getElementById('close-stats').onclick = () => statsModal.close();
@@ -275,7 +309,6 @@ document.getElementById('btn-boutique').onclick = () => {
         return `<button class="theme-btn ${locked ? 'locked' : ''}" ${locked ? 'disabled' : ''} onclick="applyTheme('${t.id}')">${t.name} ${locked ? `(Niv. ${t.req})` : ''}</button>`;
     }).join('');
     
-    // Affichage conditionnel du bouton Prestige divin
     if (lvl >= 20 && state.score >= 20000) {
         shopHtml += `<button class="btn-prestige" style="display:block;" onclick="triggerPrestigeAscension()">⚡ ACTIVER LE PRESTIGE DIVIN (+1)</button>`;
     }
