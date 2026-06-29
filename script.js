@@ -16,7 +16,7 @@ const alphabet = [
     { maj: "Ο", min: "ο", nom: "Omicron", mot: "Όνομα (Nom)", type: "lettre", mne: "Le petit 'o' tout à fait classique." },
     { maj: "Π", min: "π", nom: "Pi", mot: "Πóλη (Ville)", type: "lettre", mne: "Le fameux nombre géométrique Pi." },
     { maj: "Ρ", min: "ρ", nom: "Rho", mot: "Ρóδι (Grenade)", type: "lettre", mne: "PIÈGE ! Ressemble à un 'p' mais c'est un 'R'." },
-    { maj: "Σ", min: "σ", nom: "Sigma", mot: "Σπίτι (Maison)", type: "lettre", mne: "Un 'o' avec une casquette ou un chapeau." },
+    { maj: "Σ", min: "σ / ς", nom: "Sigma", mot: "Σπίτι (Maison) & Ήλιος (Soleil)", type: "lettre", mne: "Utilise 'σ' au début/milieu d'un mot et 'ς' à la toute fin !" },
     { maj: "Τ", min: "τ", nom: "Tau", mot: "Τυρί (Fromage)", type: "lettre", mne: "Un 'T' sans barre supérieure à gauche." },
     { maj: "Υ", min: "υ", nom: "Upsilon", mot: "Ύπνος (Sommeil)", type: "lettre", mne: "Une coupe ou un vase pour recueillir le son 'I'." },
     { maj: "Φ", min: "φ", nom: "Phi", mot: "Φως (Lumière)", type: "lettre", mne: "Une ligne verticale qui transperce un cercle." },
@@ -24,7 +24,7 @@ const alphabet = [
     { maj: "Ψ", min: "ψ", nom: "Psi", mot: "Ψωμί (Pain)", type: "lettre", mne: "Le trident magique de Poséidon : son 'Ps'." },
     { maj: "Ω", min: "ω", nom: "Omega", mot: "Ώρα (Heure)", type: "lettre", mne: "Le grand 'O' en forme de petites fesses." },
     
-    // Diphthongues (Niveau >= 2)
+    // Combinaisons (Niveau >= 2)
     { maj: "ΟΙ", min: "οι", nom: "I (oi)", mot: "Οικόγενεια (Famille)", type: "combo", mne: "L'union du O et du I se prononce 'I'." },
     { maj: "ΕΙ", min: "ει", nom: "I (ei)", mot: "Είμαι (Je suis)", type: "combo", mne: "L'union du E et du I se prononce 'I'." },
     { maj: "ΑΙ", min: "αι", nom: "È (αι)", mot: "Αίμα (Sang)", type: "combo", mne: "L'union du A et du I se prononce 'È'." },
@@ -32,36 +32,55 @@ const alphabet = [
     { maj: "ΝΤ", min: "ντ", nom: "D (nt)", mot: "Ντομάτα (Tomate)", type: "combo", mne: "En début de mot, NT se prononce 'D'." }
 ];
 
-const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "⚡", "🔱", "🏹", "🛡️", "⚔️", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "👑"];
+const avatarsList = ["👶", "🤓", "🎓", "🏛️", "🏺", "🦉", "⚡", "🔱", "🏹", "🛡️", "⚔️", "🦁", "🦅", "🐉", "🌋", "☀️", "🌟", "👑", "🔮", "🔱"];
 const themesList = [
     { id: "theme-dark", name: "Sombre Abyssal", req: 1 },
     { id: "theme-light", name: "Clarté Épurée", req: 1 },
-    { id: "theme-cyberpunk", name: "Néo Athènes 2026", req: 2 },
+    { id: "theme-cyberpunk", name: "Néo Athènes", req: 2 },
     { id: "theme-olympe", name: "Marbre de l'Olympe", req: 4 }
 ];
 
-let state = JSON.parse(localStorage.getItem('greekMasterV4')) || { score: 0, streak: 0, currentCombo: 0, history: {}, activeAvatar: "👶", activeTheme: "theme-dark" };
+// Initialisation d'état enrichie (V5)
+let state = JSON.parse(localStorage.getItem('greekMasterV5')) || { score: 0, streak: 0, highestStreak: 0, currentCombo: 0, lastLvl: 1, history: {}, activeAvatar: "👶", activeTheme: "theme-dark" };
 let currentLetter = null;
 let isSlowAudio = false;
 let chronoTimer = null;
 let timeLeft = 60;
 
-// Sound Design Nativ
+// Générateur d'effets visuels de célébration (Confettis)
+function launchCelebration() {
+    for (let i = 0; i < 75; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.backgroundColor = ['#ff007f', '#00ffcc', '#f59e0b', '#22c55e', '#6366f1'][Math.floor(Math.random() * 5)];
+        p.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+        p.style.animationDelay = Math.random() * 0.4 + 's';
+        p.style.width = p.style.height = (Math.random() * 6 + 6) + 'px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 3500);
+    }
+}
+
+// Notifications de Rappel Locales
+function initNotifications() {
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+}
+
+function triggerVibrate(p) { if ("vibrate" in navigator) navigator.vibrate(p); }
+
 function playTone(freqs, duration) {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     freqs.forEach((f, i) => {
         const osc = ctx.createOscillator(); const gain = ctx.createGain();
         osc.connect(gain); gain.connect(ctx.destination);
         osc.frequency.setValueAtTime(f, ctx.currentTime + (i * 0.08));
-        gain.gain.setValueAtTime(0.06, ctx.currentTime + (i * 0.08));
+        gain.gain.setValueAtTime(0.05, ctx.currentTime + (i * 0.08));
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i * 0.08) + duration);
         osc.start(ctx.currentTime + (i * 0.08)); osc.stop(ctx.currentTime + (i * 0.08) + duration);
     });
-}
-
-// Retour Haptique Mobile
-function triggerVibrate(pattern) {
-    if ("vibrate" in navigator) navigator.vibrate(pattern);
 }
 
 function getLevel() { return Math.min(20, Math.floor(state.score / 2000) + 1); }
@@ -72,6 +91,17 @@ function getNextLetter() {
     const unseen = pool.filter(l => !state.history[l.nom] || state.history[l.nom].total === 0);
     if (unseen.length > 0) return unseen[Math.floor(Math.random() * unseen.length)];
     return pool.sort((a,b) => ((state.history[b.nom]?.errors||0)/(state.history[b.nom]?.total||1)) - ((state.history[a.nom]?.errors||0)/(state.history[a.nom]?.total||1)))[Math.floor(Math.random() * Math.min(3, pool.length))];
+}
+
+// Clavier virtuel dynamique incluant le Sigma final (ς)
+function generateKeyboardHTML() {
+    let html = `<div class="virtual-keyboard">`;
+    alphabet.filter(l => l.type === 'lettre').forEach(l => {
+        html += `<button class="kbd-key" onclick="pressKey('${l.maj}')">${l.maj}</button>`;
+        if(l.maj === "Σ") html += `<button class="kbd-key" onclick="pressKey('ς')">ς</button>`; // Ajout du Sigma final
+    });
+    html += `<button class="kbd-key backspace" onclick="pressKey('BACK')">⌫</button></div>`;
+    return html;
 }
 
 function renderExercise() {
@@ -91,11 +121,13 @@ function renderExercise() {
         opts.sort(() => Math.random() - 0.5);
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><div class="qcm-grid">` + opts.map(o => `<button class="qcm-btn" onclick="checkAnswer('${o}', '${currentLetter.nom}')">${o}</button>`).join('') + `</div>`;
     } else if (type === 'lecture') {
-        html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><input type="text" id="answer" data-correct="${currentLetter.nom}" placeholder="Nom en français..."><br><button class="valider-btn" onclick="validateText()">Valider</button>`;
+        html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><input type="text" id="answer" data-correct="${currentLetter.nom}" placeholder="Nom de la lettre..."><br><button class="valider-btn" onclick="validateText()">Valider</button>`;
     } else if (type === 'ecriture' || type === 'audition') {
         const isAud = type === 'audition';
-        html += isAud ? `<p>Écoutez :</p><button onclick="speak('${currentLetter.nom}')" style="font-size:3rem; background:none; border:none; cursor:pointer;">🔊</button>` : `<p>Lettre pour :</p><h3>${currentLetter.nom}</h3>`;
-        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj}"><div class="virtual-keyboard">` + alphabet.filter(l=>l.type==='lettre').map(l=>`<button class="kbd-key" onclick="pressKey('${l.maj}')">${l.maj}</button>`).join('') + `<button class="kbd-key backspace" onclick="pressKey('BACK')">⌫</button></div><button class="valider-btn" onclick="validateText()">Valider</button>`;
+        html += isAud ? `<p>Écoutez le son :</p><button onclick="speak('${currentLetter.nom}')" style="font-size:3rem; background:none; border:none; cursor:pointer;">🔊</button>` : `<p>Lettre pour :</p><h3>${currentLetter.nom}</h3>`;
+        html += `<br><input type="text" id="answer" inputmode="none" data-correct="${currentLetter.maj}">`;
+        html += generateKeyboardHTML();
+        html += `<button class="valider-btn" onclick="validateText()">Valider</button>`;
         if(isAud) setTimeout(() => speak(currentLetter.nom), 300);
     } else if (type === 'oral') {
         html += `<span class="big-char">${currentLetter.maj} ${currentLetter.min}</span><button id="mic-trigger" class="mic-btn" onclick="startSpeech()">🎙️</button><div id="oral-transcript">Prêt...</div>`;
@@ -110,7 +142,16 @@ window.pressKey = function(c) {
 };
 
 window.checkAnswer = function(selected, correct) { processResult(selected.toLowerCase() === correct.toLowerCase(), correct); };
-window.validateText = function() { const i = document.getElementById('answer'); processResult(i.value.trim().toLowerCase() === i.dataset.correct.toLowerCase(), i.dataset.correct); };
+
+window.validateText = function() { 
+    const i = document.getElementById('answer'); 
+    let isCorrect = i.value.trim().toLowerCase() === i.dataset.correct.toLowerCase();
+    
+    // Souplesse d'évaluation pour le Sigma (accepte la majuscule, la minuscule ou le ς final)
+    if(i.dataset.correct === "Σ" && (i.value.trim() === "σ" || i.value.trim() === "ς" || i.value.trim() === "Σ")) isCorrect = true;
+    
+    processResult(isCorrect, i.dataset.correct); 
+};
 
 function processResult(isCorrect, correctAnswerDisplay) {
     const type = document.getElementById('exercise-select').value;
@@ -121,68 +162,70 @@ function processResult(isCorrect, correctAnswerDisplay) {
     if(input) input.disabled = true;
 
     if (isCorrect) {
-        triggerVibrate(40); state.currentCombo = Math.min(3, state.currentCombo + 1);
-        const multiplier = state.currentCombo;
-        state.score += 10 * multiplier; state.streak++;
+        triggerVibrate(35); state.currentCombo = Math.min(3, state.currentCombo + 1);
+        state.score += 10 * state.currentCombo; state.streak++;
+        if(state.streak > (state.highestStreak || 0)) state.highestStreak = state.streak;
         if(type === 'chrono') timeLeft += 2;
         if(input) input.classList.add('feedback-success');
-        playTone([523.25, 659.25, 783.99], 0.15); // Accord parfait joyeux
+        playTone([523.25, 659.25, 783.99], 0.12);
     } else {
-        triggerVibrate([80, 50, 80]); state.currentCombo = 0; state.streak = 0;
+        triggerVibrate([60, 40, 60]); state.currentCombo = 0; state.streak = 0;
         state.history[currentLetter.nom].errors++;
         if(type === 'chrono') timeLeft = Math.max(0, timeLeft - 5);
-        playTone([220, 196], 0.2); // Son d'erreur descendé
+        playTone([220, 180], 0.2);
         
-        // Injection du mnémonique visuel directement en cas de mauvaise réponse
         const container = document.getElementById('exercise-container');
         const mneDiv = document.createElement('div'); mneDiv.className = "mnemonic-text";
-        mneDiv.innerText = `💡 Mémo : ${currentLetter.mne}`;
+        mneDiv.innerText = `💡 Aide : ${currentLetter.mne}`;
         container.insertBefore(mneDiv, container.lastChild);
-        if(input) { input.classList.add('feedback-error'); input.value = `C'était : ${correctAnswerDisplay}`; }
+        if(input) { input.classList.add('feedback-error'); input.value = `Réponse : ${correctAnswerDisplay}`; }
     }
     saveAndRefresh();
-    setTimeout(renderExercise, isCorrect ? 1000 : 2500);
+    setTimeout(renderExercise, isCorrect ? 1000 : 2600);
 }
 
 function startChrono() {
     timeLeft = 60; document.getElementById('timer-val').innerText = timeLeft;
     chronoTimer = setInterval(() => {
         timeLeft--; document.getElementById('timer-val').innerText = timeLeft;
-        if(timeLeft <= 0) { stopChrono(); alert("Temps écoulé ! Votre score global a augmenté."); document.getElementById('exercise-select').value = 'qcm'; renderExercise(); }
+        if(timeLeft <= 0) { stopChrono(); alert("Fin du chrono !"); document.getElementById('exercise-select').value = 'qcm'; renderExercise(); }
     }, 1000);
 }
 function stopChrono() { clearInterval(chronoTimer); chronoTimer = null; }
 
 window.startSpeech = function() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR) return alert("Micro non supporté.");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return alert("Micro non supporté.");
     const rec = new SR(); rec.lang = 'el-GR';
-    rec.onstart = () => { document.getElementById('mic-trigger').classList.add('recording'); };
+    rec.onstart = () => document.getElementById('mic-trigger').classList.add('recording');
     rec.onresult = (e) => {
         const txt = e.results[0][0].transcript.toLowerCase();
         document.getElementById('oral-transcript').innerText = `Entendu : ${txt}`;
-        const match = txt.includes(currentLetter.nom.toLowerCase()) || txt.includes(currentLetter.min) || txt.includes(currentLetter.maj.toLowerCase());
+        const match = txt.includes(currentLetter.nom.toLowerCase()) || txt.includes(currentLetter.min[0]) || txt.includes(currentLetter.maj.toLowerCase());
         setTimeout(() => processResult(match, currentLetter.nom), 800);
     };
-    rec.onerror = () => { document.getElementById('mic-trigger').classList.remove('recording'); };
+    rec.onerror = () => document.getElementById('mic-trigger').classList.remove('recording');
     rec.onend = () => document.getElementById('mic-trigger').classList.remove('recording');
     rec.start();
 };
 
 function saveAndRefresh() {
-    localStorage.setItem('greekMasterV4', JSON.stringify(state));
     const lvl = getLevel();
+    // Activation de la célébration visuelle lors du passage de niveau
+    if (lvl > (state.lastLvl || 1)) {
+        setTimeout(launchCelebration, 200);
+        state.lastLvl = lvl;
+    }
+    
+    localStorage.setItem('greekMasterV5', JSON.stringify(state));
     document.getElementById('level-val').innerText = lvl;
     document.getElementById('score').innerText = state.score;
     document.getElementById('streak').innerText = state.streak;
     document.getElementById('avatar-val').innerText = avatarsList[lvl - 1];
     
-    // Combo UI
     const cBox = document.getElementById('combo-box');
     if(state.currentCombo > 1) { cBox.style.display = "block"; document.getElementById('combo-val').innerText = `x${state.currentCombo}`; } 
     else { cBox.style.display = "none"; }
     
-    // Barre de progression
     document.getElementById('progress-bar').style.width = `${((state.score % 2000) / 2000) * 100}%`;
     document.body.className = state.activeTheme;
     renderDashboard();
@@ -202,18 +245,35 @@ function speak(text) {
     u.lang = 'el-GR'; u.rate = isSlowAudio ? 0.45 : 0.85; window.speechSynthesis.speak(u);
 }
 
-// Boutiques et fenêtres Modales
+// Logic Menus Modaux & Statistiques enrichies
+const statsModal = document.getElementById('modal-stats');
+document.getElementById('btn-stats').onclick = () => {
+    let totalAnswers = 0, totalErrors = 0;
+    Object.values(state.history).forEach(h => { totalAnswers += h.total; totalErrors += h.errors; });
+    const accuracy = totalAnswers > 0 ? Math.round(((totalAnswers - totalErrors) / totalAnswers) * 100) : 100;
+    
+    document.getElementById('stats-content').innerHTML = `
+        <p>🏆 <span>Niveau Actuel :</span> <b>${getLevel()} / 20</b></p>
+        <p>🔥 <span>Meilleure Série (Streak) :</span> <b>${state.highestStreak || 0}</b></p>
+        <p>🎯 <span>Précision Globale :</span> <b>${accuracy}%</b></p>
+        <p>📝 <span>Exercices Effectués :</span> <b>${totalAnswers}</b></p>
+        <p>❌ <span>Nombre d'Erreurs :</span> <b>${totalErrors}</b></p>
+    `;
+    statsModal.showModal();
+};
+document.getElementById('close-stats').onclick = () => statsModal.close();
+
 const shopModal = document.getElementById('modal-boutique');
 document.getElementById('btn-boutique').onclick = () => {
     const lvl = getLevel();
-    document.getElementById('avatars-pool').innerHTML = avatarsList.map((a, i) => `<span class="avatar-item ${i < lvl ? 'unlocked' : ''}" title="Niveau ${i+1}">${a}</span>`).join('');
+    document.getElementById('avatars-pool').innerHTML = avatarsList.map((a, i) => `<span class="avatar-item ${i < lvl ? 'unlocked' : ''}">${a}</span>`).join('');
     document.getElementById('themes-pool').innerHTML = themesList.map(t => {
         const locked = lvl < t.req;
         return `<button class="theme-btn ${locked ? 'locked' : ''}" ${locked ? 'disabled' : ''} onclick="applyTheme('${t.id}')">${t.name} ${locked ? `(Niv. ${t.req})` : ''}</button>`;
     }).join('');
     shopModal.showModal();
 };
-window.applyTheme = function(themeId) { state.activeTheme = themeId; saveAndRefresh(); shopModal.close(); };
+window.applyTheme = function(tId) { state.activeTheme = tId; saveAndRefresh(); shopModal.close(); };
 document.getElementById('close-boutique').onclick = () => shopModal.close();
 
 document.getElementById('btn-fiche').onclick = () => {
@@ -222,8 +282,8 @@ document.getElementById('btn-fiche').onclick = () => {
 };
 document.getElementById('close-modal').onclick = () => document.getElementById('modal-fiche').close();
 
-document.getElementById('slow-toggle').onclick = (e) => { isSlowAudio = !isSlowAudio; e.target.classList.toggle('active', isSlowAudio); e.target.innerText = isSlowAudio ? "🐢 Audio Lent : ON" : "🐢 Audio Lent : OFF"; };
+document.getElementById('slow-toggle').onclick = (e) => { isSlowAudio = !isSlowAudio; e.target.classList.toggle('active', isSlowAudio); e.target.innerText = isSlowAudio ? "🐢 Lent" : "🐢 Audio"; };
 document.getElementById('exercise-select').onchange = renderExercise;
 document.addEventListener('keydown', (e) => { if(e.key === 'Enter') window.validateText(); });
 
-saveAndRefresh(); renderExercise();
+initNotifications(); saveAndRefresh(); renderExercise();
